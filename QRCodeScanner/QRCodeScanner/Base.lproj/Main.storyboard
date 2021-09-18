@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="QRCodeScanner" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bQh-DM-11V" customClass="QRCodeScannerView" customModule="QRCodeScanner" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IOj-QV-Psj">
+                                        <rect key="frame" x="350" y="64" width="35" height="25.5"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="photo" catalog="system">
+                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="25"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="pickerAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Cvi-fl-Gmz"/>
+                                        </connections>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hSo-uC-zzh">
+                                        <rect key="frame" x="187" y="741" width="40" height="37"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="YNS-Ne-ZD3"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="flashlight.off.fill" catalog="system">
+                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="30"/>
+                                        </state>
+                                        <state key="selected" image="flashlight.on.fill" catalog="system">
+                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="30"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="torchAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KOh-EY-U7F"/>
+                                        </connections>
+                                    </button>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kza-3M-VCh">
+                                        <rect key="frame" x="186" y="788" width="42" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.94509803920000002" green="0.94509803920000002" blue="0.94509803920000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="kza-3M-VCh" firstAttribute="centerX" secondItem="bQh-DM-11V" secondAttribute="centerX" id="2c2-6p-OEE"/>
+                                    <constraint firstItem="hSo-uC-zzh" firstAttribute="centerX" secondItem="bQh-DM-11V" secondAttribute="centerX" id="Lmq-4Z-Ozj"/>
+                                    <constraint firstItem="IOj-QV-Psj" firstAttribute="top" secondItem="bQh-DM-11V" secondAttribute="top" constant="64" id="Md0-qf-N79"/>
+                                    <constraint firstAttribute="trailing" secondItem="IOj-QV-Psj" secondAttribute="trailing" constant="29" id="k4X-MP-6lS"/>
+                                    <constraint firstItem="kza-3M-VCh" firstAttribute="top" secondItem="hSo-uC-zzh" secondAttribute="bottom" constant="10" id="phm-vu-zcm"/>
+                                    <constraint firstAttribute="bottom" secondItem="hSo-uC-zzh" secondAttribute="bottom" constant="118" id="seB-KA-Tt0"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="bQh-DM-11V" secondAttribute="trailing" id="0hq-Aw-8j9"/>
+                            <constraint firstItem="bQh-DM-11V" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="PPx-tq-CbY"/>
+                            <constraint firstAttribute="bottom" secondItem="bQh-DM-11V" secondAttribute="bottom" id="b9n-Q9-es8"/>
+                            <constraint firstItem="bQh-DM-11V" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="gQX-Rn-lGU"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="previewView" destination="bQh-DM-11V" id="NRT-89-Nnu"/>
+                        <outlet property="torchButton" destination="hSo-uC-zzh" id="rBp-du-vJE"/>
+                        <outlet property="torchLabel" destination="kza-3M-VCh" id="3mZ-8K-dhJ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-232" y="123"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="flashlight.off.fill" catalog="system" width="76" height="128"/>
+        <image name="flashlight.on.fill" catalog="system" width="76" height="128"/>
+        <image name="photo" catalog="system" width="128" height="93"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
