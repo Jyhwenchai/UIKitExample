@@ -9,20 +9,23 @@
 /* Begin PBXBuildFile section */
 		660D747526F08AF000E4219C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D747426F08AF000E4219C /* AppDelegate.swift */; };
 		660D747726F08AF000E4219C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D747626F08AF000E4219C /* SceneDelegate.swift */; };
-		660D747926F08AF000E4219C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D747826F08AF000E4219C /* ViewController.swift */; };
+		660D747926F08AF000E4219C /* QRCodeScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D747826F08AF000E4219C /* QRCodeScannerViewController.swift */; };
 		660D747C26F08AF000E4219C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 660D747A26F08AF000E4219C /* Main.storyboard */; };
 		660D747E26F08AF200E4219C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 660D747D26F08AF200E4219C /* Assets.xcassets */; };
 		660D748126F08AF200E4219C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 660D747F26F08AF200E4219C /* LaunchScreen.storyboard */; };
 		660D748B26F08E7100E4219C /* QRCodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D748A26F08E7100E4219C /* QRCodeScanner.swift */; };
 		660D748D26F08E9700E4219C /* QRCodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D748C26F08E9700E4219C /* QRCodeScannerView.swift */; };
 		660D748F26F0A47C00E4219C /* QRCodeScannerViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660D748E26F0A47C00E4219C /* QRCodeScannerViewer.swift */; };
+		6614E8B0270041A300A43E0D /* QRCodeCreater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6614E8AF270041A300A43E0D /* QRCodeCreater.swift */; };
+		6614E8B227004C2900A43E0D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6614E8B127004C2900A43E0D /* ViewController.swift */; };
+		6614E8B427004CF700A43E0D /* QRCodeCreaterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6614E8B327004CF700A43E0D /* QRCodeCreaterViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		660D747126F08AF000E4219C /* QRCodeScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QRCodeScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		660D747426F08AF000E4219C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		660D747626F08AF000E4219C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		660D747826F08AF000E4219C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		660D747826F08AF000E4219C /* QRCodeScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerViewController.swift; sourceTree = "<group>"; };
 		660D747B26F08AF000E4219C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		660D747D26F08AF200E4219C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		660D748026F08AF200E4219C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -30,6 +33,9 @@
 		660D748A26F08E7100E4219C /* QRCodeScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanner.swift; sourceTree = "<group>"; };
 		660D748C26F08E9700E4219C /* QRCodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerView.swift; sourceTree = "<group>"; };
 		660D748E26F0A47C00E4219C /* QRCodeScannerViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerViewer.swift; sourceTree = "<group>"; };
+		6614E8AF270041A300A43E0D /* QRCodeCreater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeCreater.swift; sourceTree = "<group>"; };
+		6614E8B127004C2900A43E0D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6614E8B327004CF700A43E0D /* QRCodeCreaterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeCreaterViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,10 +70,13 @@
 			children = (
 				660D747426F08AF000E4219C /* AppDelegate.swift */,
 				660D747626F08AF000E4219C /* SceneDelegate.swift */,
-				660D747826F08AF000E4219C /* ViewController.swift */,
+				660D747826F08AF000E4219C /* QRCodeScannerViewController.swift */,
 				660D748A26F08E7100E4219C /* QRCodeScanner.swift */,
 				660D748C26F08E9700E4219C /* QRCodeScannerView.swift */,
 				660D748E26F0A47C00E4219C /* QRCodeScannerViewer.swift */,
+				6614E8AF270041A300A43E0D /* QRCodeCreater.swift */,
+				6614E8B327004CF700A43E0D /* QRCodeCreaterViewController.swift */,
+				6614E8B127004C2900A43E0D /* ViewController.swift */,
 				660D747A26F08AF000E4219C /* Main.storyboard */,
 				660D747D26F08AF200E4219C /* Assets.xcassets */,
 				660D747F26F08AF200E4219C /* LaunchScreen.storyboard */,
@@ -147,12 +156,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				660D747926F08AF000E4219C /* ViewController.swift in Sources */,
+				660D747926F08AF000E4219C /* QRCodeScannerViewController.swift in Sources */,
+				6614E8B227004C2900A43E0D /* ViewController.swift in Sources */,
+				6614E8B427004CF700A43E0D /* QRCodeCreaterViewController.swift in Sources */,
 				660D747526F08AF000E4219C /* AppDelegate.swift in Sources */,
 				660D748F26F0A47C00E4219C /* QRCodeScannerViewer.swift in Sources */,
 				660D748B26F08E7100E4219C /* QRCodeScanner.swift in Sources */,
 				660D747726F08AF000E4219C /* SceneDelegate.swift in Sources */,
 				660D748D26F08E9700E4219C /* QRCodeScannerView.swift in Sources */,
+				6614E8B0270041A300A43E0D /* QRCodeCreater.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
