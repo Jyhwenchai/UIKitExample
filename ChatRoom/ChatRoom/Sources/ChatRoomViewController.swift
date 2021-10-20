@@ -22,7 +22,6 @@ class ChatRoomViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorColor = .clear
-//        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 12))
         return tableView
     }()
@@ -112,6 +111,11 @@ class ChatRoomViewController: UIViewController {
         
     }
 
+    deinit {
+        keyboardWillShowToken = nil
+        keyboardWillHideToken = nil
+    }
+    
     //MARK: Main Method
     /// Call this method when receive new message
     func layoutUIWhenReceiveMessage() {

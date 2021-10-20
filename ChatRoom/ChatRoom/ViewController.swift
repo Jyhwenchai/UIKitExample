@@ -51,10 +51,6 @@ extension ViewController {
         return cell
     }
     
-    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        view.endEditing(true)
-    }
-    
 }
 
 extension ViewController {

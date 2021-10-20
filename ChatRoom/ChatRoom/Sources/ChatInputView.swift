@@ -35,23 +35,6 @@ class ChatInputView: UIView {
         return button
     }()
     
-
-//    let textField: UITextField = {
-//        let textField = UITextField()
-//        textField.backgroundColor = UIColor.white
-//        textField.font = UIFont.systemFont(ofSize: 16)
-//        textField.textColor = UIColor.darkText
-//        textField.layer.cornerRadius = 18
-//        textField.tintColor = UIColor.systemRed
-//        textField.leftViewMode = .always
-//        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 0))
-//        textField.rightViewMode = .always
-//        textField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 0))
-//        textField.returnKeyType = .send
-//        textField.enablesReturnKeyAutomatically = true
-//        return textField
-//    }()
-    
     let textField: UITextView = {
         let textField = UITextView()
         textField.backgroundColor = UIColor.white
