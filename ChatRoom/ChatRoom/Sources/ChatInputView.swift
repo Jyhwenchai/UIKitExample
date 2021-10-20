@@ -76,7 +76,7 @@ class ChatInputView: UIView {
         contentView.addSubview(emojiButton)
         contentView.addSubview(addButton)
         contentView.addSubview(lineView)
-        lineView.backgroundColor = UIColor(hex: "eeeeee")
+        lineView.backgroundColor = UIColor(hex: "e1e1e1")
     }
     
     required init?(coder: NSCoder) {

@@ -22,6 +22,8 @@ class ChatRoomViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorColor = .clear
+//        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 12))
         return tableView
     }()
     
@@ -157,10 +159,8 @@ class ChatRoomViewController: UIViewController {
     }
     
     func scrollToBottom() {
-        let numberOfRows = tableView.numberOfRows(inSection: 0)
-        guard numberOfRows > 0 else { return }
         UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
-            self.tableView.scrollToRow(at: IndexPath(row: numberOfRows - 1, section: 0), at: .bottom, animated: false)
+            self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: false)
         }
     }
 }
