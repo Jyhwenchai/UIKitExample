@@ -9,6 +9,7 @@ import UIKit
 
 private let maxInputHeight: CGFloat = 100.0
 private let minInputHeight: CGFloat = 36.0
+private let inputMarginSpacing: CGFloat = 16
 
 class ChatInputView: UIView {
 
@@ -68,30 +69,22 @@ class ChatInputView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        let minViewHeight = minInputHeight + inputMarginSpacing
+        let componentY = height - minViewHeight
         contentView.frame = CGRect(x: 0, y: 0, width: width, height: height)
-        voiceButton.frame = CGRect(x: 0, y: height - 52, width: 54, height: 52)
-        textField.frame = CGRect(x: 54, y: 8, width: width - 54 - 93, height: height - 16)
+        voiceButton.frame = CGRect(x: 0, y: componentY, width: 54, height: minViewHeight)
+        textField.frame = CGRect(x: 54, y: 8, width: width - 54 - 93, height: height - inputMarginSpacing)
         addButton.sizeToFit()
-        addButton.frame = CGRect(x: width - addButton.width - 15, y: height - 52, width: addButton.width, height: 52)
+        addButton.frame = CGRect(x: width - addButton.width - 15, y: componentY, width: addButton.width, height: minViewHeight)
         emojiButton.sizeToFit()
-        emojiButton.frame = CGRect(x: addButton.minX - addButton.width - 15, y: height - 52, width: emojiButton.width, height: 52)
+        emojiButton.frame = CGRect(x: addButton.minX - addButton.width - 15, y: componentY, width: emojiButton.width, height: minViewHeight)
         lineView.frame = CGRect(x: 0, y: 0, width: contentView.width, height: 1)
     }
     
 }
 
 extension ChatInputView: UITextViewDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if let text = textField.text, !text.isEmpty {
-            textField.text = nil
-            confirmInputClosure?(text)
-            return true
-        } else {
-            return false
-        }
-    }
     
-   
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             if let text = textView.text {
@@ -106,7 +99,7 @@ extension ChatInputView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         if let _ = textView.text {
             let size = textView.sizeThatFits(CGSize(width: textView.width, height: 0))
-            let viewHeight: CGFloat = min(max(ceil(size.height), 36), maxInputHeight) + 16
+            let viewHeight: CGFloat = min(max(ceil(size.height), minInputHeight), maxInputHeight) + inputMarginSpacing
             updateFrameClosure?(viewHeight)
         }
     }
@@ -115,6 +108,6 @@ extension ChatInputView: UITextViewDelegate {
 
 extension ChatInputView {
     var minHeight: CGFloat {
-        minInputHeight + 16.0
+        minInputHeight + inputMarginSpacing
     }
 }
