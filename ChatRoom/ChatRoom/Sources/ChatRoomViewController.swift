@@ -65,8 +65,6 @@ class ChatRoomViewController: UIViewController {
         initView()
         initBind()
         initNotification()
-        tableView.tableHeaderView = tableHeaderView
-        indicatorView.startAnimating()
     }
     
     func initNav() {
@@ -268,51 +266,52 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         view.endEditing(true)
-//        if indicatorView.isAnimating {
-//            print("refresh immediate")
-//            refreshDataImmidiate()
-//            tableView.reloadData()
-//            dragTimes = 2
-//        }
+        print(#function)
         if historyLoading {
-            print("refresh immediate")
-            refreshDataImmidiate()
-            tableView.reloadData()
             dragTimes = 2
+            refreshDataImmidiate()
+            return
         }
         
+        if dragTimes == 1 && historyLoading == false {
+            historyLoading = true
+            startLoadHistoryMessage()
+        }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let contentOffsetY = scrollView.contentOffset.y
-        if contentOffsetY < 0 && hasHistoryMessage() && !indicatorView.isAnimating {
-//            tableView.tableHeaderView = tableHeaderView
+        if contentOffsetY < 0 && hasHistoryMessage() && !indicatorView.isAnimating && keyboardFrame == .zero && dragTimes == 0 {
             dragTimes = 1
+            tableView.tableHeaderView = tableHeaderView
             indicatorView.startAnimating()
+            print(#function)
         }
         
     }
     
     
-    
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        let contentOffsetY = scrollView.contentOffset.y
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        print(#function)
         if dragTimes == 2 {
-            dragTimes = 0
             return
         }
-        if contentOffsetY < 20 && hasHistoryMessage() {
+        if dragTimes == 1 && historyLoading == false {
             historyLoading = true
-//            tableView.tableHeaderView = tableHeaderView
-//            indicatorView.startAnimating()
-            print("start loading")
             startLoadHistoryMessage()
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        tableViewIsScrolling = false
+        print(#function)
+        if dragTimes == 2 {
+            return
+        }
+        if dragTimes == 1 && historyLoading == false {
+            historyLoading = true
+            startLoadHistoryMessage()
+        }
     }
     
     func refreshDataImmidiate() {
@@ -320,19 +319,17 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
             refreshState = .unRefresh
             return
         }
-        
         refreshState = .refreshing
         tableView.shouldResetContentOffset = true
         self.indicatorView.stopAnimating()
-//        self.tableView.tableHeaderView = nil
+        self.tableView.tableHeaderView = nil
         UIView.performWithoutAnimation {
-            print("--- reload data")
             self.tableView.reloadData()
         }
         
+        dragTimes = 0
         refreshState = .complete
         historyLoading = false
-        print("refresh complete")
     }
     
     func layoutUIWhenLoadPageCompletion(insertCount: Int) {
@@ -342,11 +339,10 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
                 self.refreshState = .unRefresh
                 return
             }
-            print("begin update cells")
             self.tableView.shouldResetContentOffset = false
             self.refreshState = .refreshing
             self.indicatorView.stopAnimating()
-//            self.tableView.tableHeaderView = nil
+            self.tableView.tableHeaderView = nil
             
             var indexPathes: [IndexPath] = []
             for index in 0..<insertCount {
@@ -361,6 +357,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
                 let contentOffset = cell.maxY - tableHeaderHeight + self.tableView.contentOffset.y
                 self.tableView.setContentOffset(CGPoint(x: 0, y: contentOffset) , animated: false)
             }
+            self.dragTimes = 0
             self.historyLoading = false
             self.refreshState = .unRefresh
         }

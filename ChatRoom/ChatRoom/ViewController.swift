@@ -21,7 +21,11 @@ class ViewController: ChatRoomViewController {
     }
     
     @objc func testAction() {
-        tableView.selectRow(at: IndexPath(row: 10, section: 0), animated: false, scrollPosition: .top)
+//        tableView.selectRow(at: IndexPath(row: 10, section: 0), animated: false, scrollPosition: .top)
+        viewModel.messages.removeAll()
+        indicatorView.stopAnimating()
+        tableView.tableHeaderView = nil
+        tableView.reloadData()
     }
     
     override func initView() {
@@ -48,7 +52,6 @@ class ViewController: ChatRoomViewController {
     
     override func startLoadHistoryMessage() {
         self.viewModel.loadMoreMessage()
-        print("load more data")
     }
     
     override func hasHistoryMessage() -> Bool {
