@@ -14,6 +14,14 @@ class ViewController: ChatRoomViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        // test item
+        let barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(testAction))
+        navigationItem.rightBarButtonItems = [barItem]
+    }
+    
+    @objc func testAction() {
+        tableView.selectRow(at: IndexPath(row: 10, section: 0), animated: false, scrollPosition: .top)
     }
     
     override func initView() {
@@ -27,10 +35,24 @@ class ViewController: ChatRoomViewController {
             guard let self = self else { return }
             self.layoutUIWhenReceiveMessage()
         }
+        
+        viewModel.loadHistoryMessageCompleteHandler = { [weak self] insertCount in
+            guard let self = self else { return }
+            self.layoutUIWhenLoadPageCompletion(insertCount: insertCount)
+        }
     }
     
     override func inputViewConfirmInput(_ text: String) {
         viewModel.addMessage(text)
+    }
+    
+    override func startLoadHistoryMessage() {
+        self.viewModel.loadMoreMessage()
+        print("load more data")
+    }
+    
+    override func hasHistoryMessage() -> Bool {
+        return viewModel.messages.count > 10
     }
     
 }

@@ -14,6 +14,7 @@ class ChatViewModel {
     var messages: [TextModel] = []
     
     var receiveNewMessageHandler: (() -> Void)?
+    var loadHistoryMessageCompleteHandler: ((Int) -> Void)?
     
     func addMessage(_ text: String) {
         let direction: Direction = Int8.random(in: 1...Int8.max) % 2 == 0 ? .left : .right
@@ -52,5 +53,29 @@ class ChatViewModel {
     
     func cellHeight(at indexPath: IndexPath) -> CGFloat {
         messages[indexPath.item].contentSize.height + cellSpacing
+    }
+    
+    var count = 0
+    func loadMoreMessage() {
+        var addIndexes: [Int] = []
+        var addMessages: [TextModel] = []
+//        var count = 0
+//        repeat {
+//            let index = Int.random(in: 0...messages.count - 1)
+//            if !addIndexes.contains(index) {
+//                addIndexes.append(index)
+//                addMessages.append(messages[index])
+//                count += 1
+//            }
+//        } while(count < 5)
+//
+        
+        for index in 0..<5 {
+            let model = TextModel(text: "new message \(count) - \(index)", direction: .left, contentSize: CGSize(width: 200, height: 40))
+            addMessages.append(model)
+            count += 1
+        }
+        messages.insert(contentsOf: addMessages, at: 0)
+        loadHistoryMessageCompleteHandler?(addMessages.count)
     }
 }
