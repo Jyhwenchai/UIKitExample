@@ -20,6 +20,11 @@ class ViewController: ChatRoomViewController {
         navigationItem.rightBarButtonItems = [barItem]
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scrollToBottom(animated: false)
+    }
+    
     @objc func testAction() {
         viewModel.messages.removeAll()
         indicatorView.stopAnimating()
@@ -34,7 +39,7 @@ class ViewController: ChatRoomViewController {
     
     override func initBind() {
         super.initBind()
-        viewModel.receiveNewMessageHandler = { [weak self] in
+        viewModel.addNewMessageCompleteHandler = { [weak self] in
             guard let self = self else { return }
             self.layoutUIWhenReceiveMessage()
         }
@@ -46,11 +51,14 @@ class ViewController: ChatRoomViewController {
     }
     
     override func inputViewConfirmInput(_ text: String) {
+        // keyboard return event
         viewModel.addMessage(text)
     }
     
     override func loadingHistoryMessages(completion: (Bool) -> Void) {
+        // load history message here.
         self.viewModel.loadMoreMessage()
+        // return true, if loading successful. otherwise return false
         completion(true)
     }
     

@@ -44,6 +44,7 @@
 		660EC1C3271EA46A00CB0E42 /* ScreenAppearence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAppearence.swift; sourceTree = "<group>"; };
 		660EC1C5271EB9CC00CB0E42 /* TextModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextModel.swift; sourceTree = "<group>"; };
 		660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomViewController.swift; sourceTree = "<group>"; };
+		6643DBBC2722AAFA00B7D7C9 /* TestCase.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TestCase.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +110,7 @@
 			children = (
 				660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */,
 				660EC1B6271E4F2F00CB0E42 /* ChatInputView.swift */,
+				6643DBBC2722AAFA00B7D7C9 /* TestCase.md */,
 			);
 			path = Sources;
 			sourceTree = "<group>";

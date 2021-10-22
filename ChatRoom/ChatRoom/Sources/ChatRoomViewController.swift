@@ -9,6 +9,7 @@ import UIKit
 
 private let tabBarAdditionHeight: CGFloat = ScreenAppearence.bottomSafeAreaHeight
 private let tableHeaderHeight: CGFloat = 30.0
+private let tableFooterHeight: CGFloat = 12.0
 
 class ChatRoomViewController: UIViewController {
 
@@ -25,6 +26,7 @@ class ChatRoomViewController: UIViewController {
     private var keyboardFrame: CGRect = .zero
     private var refreshState: RefreshState = .normal
     private var loadPageSuccessContentOffset: CGPoint = .zero
+    private var viewDidLayout: Bool = false
     
     //MARK: - Views
     let chatInputView: ChatInputView = ChatInputView()
@@ -49,8 +51,7 @@ class ChatRoomViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorColor = .clear
-        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 12))
-        tableView.tableFooterView?.tag = 10000
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: tableFooterHeight))
         return tableView
     }()
     
@@ -123,7 +124,7 @@ class ChatRoomViewController: UIViewController {
         self.keyboardWillShowToken = NotificationCenter.default.addObserver(forName: UIViewController.keyboardWillShowNotification, object: nil, queue: nil) { [weak self] notification in
             guard let self = self else { return }
             if self.keyboardFrame == .zero {
-                self.scrollToBottom()
+                self.scrollToBottomWhenKeyBoardWillShow()
             }
             self.keyboardFrame = notification.keyboardFrame
             self.chatInputView.frame = CGRect(x: 0, y: self.keyboardFrame.minY - self.chatInputView.height, width: self.chatInputView.width, height: self.chatInputView.height)
@@ -147,7 +148,7 @@ class ChatRoomViewController: UIViewController {
     //MARK: Main Method
     
     /// Reload data and update UI immediately when drag tableView and refreshState is `loadingDataCompleted`
-    private func refreshDataImmidiate() {
+    private func reloadDataImmidiate() {
         if self.refreshState != .loadingDataCompleted {
             return
         }
@@ -199,7 +200,7 @@ class ChatRoomViewController: UIViewController {
         self.tableView.setNeedsLayout()
         self.tableView.layoutIfNeeded()
         self.layoutTableView(with: self.keyboardFrame)
-        self.scrollToBottom()
+        self.scrollToBottomWhenKeyBoardWillShow()
     }
     
     /// Update tableView frame when keyboard or inputView frame changed.
@@ -234,10 +235,23 @@ class ChatRoomViewController: UIViewController {
         
     }
     
-    private func scrollToBottom() {
+    private func scrollToBottomWhenKeyBoardWillShow() {
         UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
             self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: false)
         }
+    }
+    
+    /// Call this method when first load data.(called in the `viewDidLayoutSubviews` method)
+    func scrollToBottom(animated: Bool) {
+        defer { viewDidLayout = true }
+        tableView.reloadData()
+        tableView.setNeedsLayout()
+        tableView.layoutIfNeeded()
+        let cellHeight = getCellsHeight()
+        let offset = cellHeight + tableFooterHeight - tableView.height
+        // The default tableView.contentOffset.y value is -tableView.safeAreaInsets.top
+        if  offset <= tableView.contentOffset.y { return }
+        tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
     }
     
     //MARK: Implemented by subclasses
@@ -250,7 +264,9 @@ class ChatRoomViewController: UIViewController {
     func loadingHistoryMessages(completion: (Bool) -> Void) {
     }
     
-    /// If there are history messages, loading more messages
+    /// Check has more history messages or not.
+    ///
+    ///  If there are history messages, can triger loading more messages event.
     func hasHistoryMessage() -> Bool {
         false
     }
@@ -292,7 +308,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
              */
             
             let beforeCellsHeight = getCellsHeight()
-            refreshDataImmidiate()
+            reloadDataImmidiate()
             let endCellsHeight = getCellsHeight()
             // 在插入新的cell前后 tableHeaderView，插入后被移除，所以要减去 tableHeaderView 的高度
             let offsetY = endCellsHeight - beforeCellsHeight - tableHeaderHeight + scrollView.contentOffset.y
@@ -304,13 +320,20 @@ extension ChatRoomViewController:  UITableViewDelegate {
     
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        if !viewDidLayout { return }
+        
         // keep contentOffset
         if loadPageSuccessContentOffset != .zero {
             scrollView.setContentOffset(loadPageSuccessContentOffset, animated: false)
             loadPageSuccessContentOffset = .zero
         }
+        
         let contentOffsetY = scrollView.contentOffset.y
-        if contentOffsetY < 0 && hasHistoryMessage() && !indicatorView.isAnimating && keyboardFrame == .zero && refreshState == .normal {
+        if contentOffsetY < 0 && hasHistoryMessage()
+            && !indicatorView.isAnimating
+            && keyboardFrame == .zero
+            && refreshState == .normal {
             refreshState = .prepared
             tableView.tableHeaderView = tableHeaderView
             indicatorView.startAnimating()

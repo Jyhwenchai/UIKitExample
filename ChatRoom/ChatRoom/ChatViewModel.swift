@@ -13,15 +13,24 @@ class ChatViewModel {
     
     var messages: [TextModel] = []
     
-    var receiveNewMessageHandler: (() -> Void)?
+    var addNewMessageCompleteHandler: (() -> Void)?
     var loadHistoryMessageCompleteHandler: ((Int) -> Void)?
+    
+    init() {
+        var addMessages: [TextModel] = []
+        for index in 0..<10 {
+            let model = TextModel(text: "new message \(count) - \(index)", direction: .left, contentSize: CGSize(width: 200, height: 40))
+            addMessages.append(model)
+        }
+        messages.append(contentsOf: addMessages)
+    }
     
     func addMessage(_ text: String) {
         let direction: Direction = Int8.random(in: 1...Int8.max) % 2 == 0 ? .left : .right
         let size = calculateMessageSize(text)
         let model = TextModel(text: text, direction: direction, contentSize: size)
         messages.append(model)
-        receiveNewMessageHandler?()
+        addNewMessageCompleteHandler?()
     }
     
     
