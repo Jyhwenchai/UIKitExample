@@ -21,7 +21,6 @@ class ViewController: ChatRoomViewController {
     }
     
     @objc func testAction() {
-//        tableView.selectRow(at: IndexPath(row: 10, section: 0), animated: false, scrollPosition: .top)
         viewModel.messages.removeAll()
         indicatorView.stopAnimating()
         tableView.tableHeaderView = nil
@@ -42,7 +41,7 @@ class ViewController: ChatRoomViewController {
         
         viewModel.loadHistoryMessageCompleteHandler = { [weak self] insertCount in
             guard let self = self else { return }
-            self.layoutUIWhenLoadPageCompletion(insertCount: insertCount)
+            self.reloadDataWhenLoadingPage()
         }
     }
     
@@ -50,8 +49,9 @@ class ViewController: ChatRoomViewController {
         viewModel.addMessage(text)
     }
     
-    override func startLoadHistoryMessage() {
+    override func loadingHistoryMessages(completion: (Bool) -> Void) {
         self.viewModel.loadMoreMessage()
+        completion(true)
     }
     
     override func hasHistoryMessage() -> Bool {

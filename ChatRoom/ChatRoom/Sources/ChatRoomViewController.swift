@@ -12,6 +12,21 @@ private let tableHeaderHeight: CGFloat = 30.0
 
 class ChatRoomViewController: UIViewController {
 
+    public var loadingPageDelayInterval: TimeInterval = 0.6
+    
+    private enum RefreshState {
+        case normal
+        case prepared
+        case loadingData
+        case loadingDataCompleted
+        case updatingUI
+    }
+    
+    private var keyboardFrame: CGRect = .zero
+    private var refreshState: RefreshState = .normal
+    private var loadPageSuccessContentOffset: CGPoint = .zero
+    
+    //MARK: - Views
     let chatInputView: ChatInputView = ChatInputView()
     let indicatorView: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 15, height: 15))
@@ -27,33 +42,15 @@ class ChatRoomViewController: UIViewController {
         return headerView
     }()
     
-    var keyboardFrame: CGRect = .zero
-    var historyLoading: Bool = false
-    var tableViewIsScrolling: Bool = false
-  
-    enum ScrollDirection {
-        case top
-        case bottom
-    }
     
-    enum RefreshState {
-        case unRefresh
-        case refreshing
-        case complete
-    }
-    
-    var refreshState: RefreshState = .unRefresh
-    
-    var lastContentOffset: CGPoint = .zero
-    var dragTimes: Int = 0
-    
-    lazy var tableView: ChatTableView = {
-        let tableView = ChatTableView()
+    lazy var tableView: UITableView = {
+        let tableView = UITableView()
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorColor = .clear
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 12))
+        tableView.tableFooterView?.tag = 10000
         return tableView
     }()
     
@@ -148,6 +145,54 @@ class ChatRoomViewController: UIViewController {
     }
     
     //MARK: Main Method
+    
+    /// Reload data and update UI immediately when drag tableView and refreshState is `loadingDataCompleted`
+    private func refreshDataImmidiate() {
+        if self.refreshState != .loadingDataCompleted {
+            return
+        }
+        refreshState = .updatingUI
+        self.indicatorView.stopAnimating()
+        self.tableView.tableHeaderView = nil
+        UIView.performWithoutAnimation {
+            self.tableView.reloadData()
+        }
+        self.tableView.setNeedsLayout()
+        self.tableView.layoutIfNeeded()
+        self.refreshState = .normal
+    }
+    
+    /// Reload data and update UI when loading history page
+    func reloadDataWhenLoadingPage() {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + loadingPageDelayInterval) {
+ 
+            if self.refreshState != .loadingDataCompleted {
+                return
+            }
+            
+            self.refreshState = .updatingUI
+            self.indicatorView.stopAnimating()
+            self.tableView.tableHeaderView = nil
+            
+            let reloadBeforeCount = self.tableView.numberOfRows(inSection: 0)
+            self.tableView.reloadData()
+            let reloadEndCount = self.tableView.numberOfRows(inSection: 0)
+            
+            self.tableView.setNeedsLayout()
+            self.tableView.layoutIfNeeded()
+            // keep the original position of cells.
+            let addCellsCount = reloadEndCount - reloadBeforeCount
+            if let cell = self.tableView.cellForRow(at: IndexPath(row: addCellsCount - 1, section: 0)) {
+                let contentOffset = cell.maxY - tableHeaderHeight + self.tableView.contentOffset.y
+                self.tableView.setContentOffset(CGPoint(x: 0, y: contentOffset) , animated: false)
+            }
+            self.refreshState = .normal
+            self.tableView.bounces = true
+        }
+       
+    }
+    
     /// Call this method when receive new message
     func layoutUIWhenReceiveMessage() {
         self.tableView.reloadData()
@@ -157,48 +202,6 @@ class ChatRoomViewController: UIViewController {
         self.scrollToBottom()
     }
     
-    
-    /// Call this method when loading history page
-    /// - Parameter insertCount: number of messages inserted
-//    func layoutUIWhenLoadPageCompletion(insertCount: Int) {
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
-//            if self.refreshState == .refreshing || self.refreshState == .complete {
-//                self.refreshState = .unRefresh
-//                return
-//            }
-//            self.refreshState = .refreshing
-//            self.indicatorView.stopAnimating()
-//            self.tableView.tableHeaderView = nil
-//
-//            //        var indexPathes: [IndexPath] = []
-//            //        for index in 0..<insertCount {
-//            //            indexPathes.append(IndexPath(row: index, section: 0))
-//            //        }
-//            UIView.performWithoutAnimation {
-//                //            self.tableView.insertRows(at: indexPathes, with: .none)
-//                self.tableView.reloadData()
-//            }
-//
-//            self.tableView.setNeedsLayout()
-//            self.tableView.layoutIfNeeded()
-//            // keep the original position of cells.
-//            if let cell = self.tableView.cellForRow(at: IndexPath(row: insertCount - 1, section: 0)) {
-//                let contentOffset = cell.maxY - tableHeaderHeight + self.tableView.contentOffset.y
-//                self.tableView.setContentOffset(CGPoint(x: 0, y: contentOffset) , animated: false)
-//                print("in currentOffset: \(self.tableView.contentOffset)")
-//            } else {
-//
-//                print("out currentOffset: \(self.tableView.contentOffset)")
-//            }
-//
-//            print("currentOffset: \(self.tableView.contentOffset)")
-//            self.historyLoading = false
-//            self.refreshState = .unRefresh
-//        }
-//
-//    }
-
     /// Update tableView frame when keyboard or inputView frame changed.
     private func layoutTableView(with keyboardFrame: CGRect) {
         
@@ -244,17 +247,18 @@ class ChatRoomViewController: UIViewController {
 
     
     /// Execute load history messages, implemented by subclasses
-    func startLoadHistoryMessage() {
+    func loadingHistoryMessages(completion: (Bool) -> Void) {
     }
     
     /// If there are history messages, loading more messages
     func hasHistoryMessage() -> Bool {
         false
     }
+    
 }
 
-
-extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
+//MARK: - UITableViewDataSource initialize
+extension ChatRoomViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 0
@@ -264,105 +268,98 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
         return UITableViewCell()
     }
     
+}
+
+
+//MARK: - UIScrollView Delegate Handler
+extension ChatRoomViewController:  UITableViewDelegate {
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        view.endEditing(true)
-        print(#function)
-        if historyLoading {
-            dragTimes = 2
-            refreshDataImmidiate()
-            return
-        }
         
-        if dragTimes == 1 && historyLoading == false {
-            historyLoading = true
-            startLoadHistoryMessage()
+        view.endEditing(true)
+        if refreshState == .loadingDataCompleted {
+            scrollView.bounces = false
+            // delay to refresh
+            usleep(150000)
+    
+            /**
+             由于部分 iOS 版本通过 `scrollView.contentSize` 得到的值不正确，所以只能通过计算所有 cell 的高度来计算分页前后增加的高度
+             let beforeContentSize = scrollView.contentSize
+             
+             let endContentSize = scrollView.contentSize
+             
+             scrollView.setContentOffset(CGPoint(x: 0, y: endContentSize.height - beforeContentSize.height + scrollView.contentOffset.y), animated: false)
+             */
+            
+            let beforeCellsHeight = getCellsHeight()
+            refreshDataImmidiate()
+            let endCellsHeight = getCellsHeight()
+            // 在插入新的cell前后 tableHeaderView，插入后被移除，所以要减去 tableHeaderView 的高度
+            let offsetY = endCellsHeight - beforeCellsHeight - tableHeaderHeight + scrollView.contentOffset.y
+            scrollView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+            loadPageSuccessContentOffset = scrollView.contentOffset
+            scrollView.bounces = true
         }
     }
     
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
+        // keep contentOffset
+        if loadPageSuccessContentOffset != .zero {
+            scrollView.setContentOffset(loadPageSuccessContentOffset, animated: false)
+            loadPageSuccessContentOffset = .zero
+        }
         let contentOffsetY = scrollView.contentOffset.y
-        if contentOffsetY < 0 && hasHistoryMessage() && !indicatorView.isAnimating && keyboardFrame == .zero && dragTimes == 0 {
-            dragTimes = 1
+        if contentOffsetY < 0 && hasHistoryMessage() && !indicatorView.isAnimating && keyboardFrame == .zero && refreshState == .normal {
+            refreshState = .prepared
             tableView.tableHeaderView = tableHeaderView
             indicatorView.startAnimating()
-            print(#function)
         }
-        
     }
     
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        print(#function)
-        if dragTimes == 2 {
-            return
-        }
-        if dragTimes == 1 && historyLoading == false {
-            historyLoading = true
-            startLoadHistoryMessage()
-        }
+        prepareLoadHistoryPage()
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        print(#function)
-        if dragTimes == 2 {
-            return
-        }
-        if dragTimes == 1 && historyLoading == false {
-            historyLoading = true
-            startLoadHistoryMessage()
+        prepareLoadHistoryPage()
+    }
+    
+    private func prepareLoadHistoryPage() {
+        if refreshState == .prepared  {
+            refreshState = .loadingData
+            loadingHistoryMessages { [weak self] success in
+                guard let self = self else { return }
+                if success {
+                    self.refreshState = .loadingDataCompleted
+                } else {
+                    self.cancelLoadingPage()
+                }
+            }
         }
     }
     
-    func refreshDataImmidiate() {
-        if refreshState == .refreshing || refreshState == .complete {
-            refreshState = .unRefresh
-            return
-        }
-        refreshState = .refreshing
-        tableView.shouldResetContentOffset = true
+    /// cancel loading data
+    private func cancelLoadingPage() {
         self.indicatorView.stopAnimating()
         self.tableView.tableHeaderView = nil
-        UIView.performWithoutAnimation {
-            self.tableView.reloadData()
-        }
-        
-        dragTimes = 0
-        refreshState = .complete
-        historyLoading = false
+        self.tableView.scrollsToTop = true
+        self.tableView.setNeedsLayout()
+        self.tableView.layoutIfNeeded()
+        self.refreshState = .normal
     }
     
-    func layoutUIWhenLoadPageCompletion(insertCount: Int) {
+    private func getCellsHeight() -> CGFloat {
+        let numberOfCount = tableView.numberOfRows(inSection: 0)
+        guard numberOfCount > 0 else  { return tableView.contentSize.height }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
-            if self.refreshState == .refreshing || self.refreshState == .complete {
-                self.refreshState = .unRefresh
-                return
-            }
-            self.tableView.shouldResetContentOffset = false
-            self.refreshState = .refreshing
-            self.indicatorView.stopAnimating()
-            self.tableView.tableHeaderView = nil
-            
-            var indexPathes: [IndexPath] = []
-            for index in 0..<insertCount {
-                indexPathes.append(IndexPath(row: index, section: 0))
-            }
-            self.tableView.reloadData()
-            
-            self.tableView.setNeedsLayout()
-            self.tableView.layoutIfNeeded()
-            // keep the original position of cells.
-            if let cell = self.tableView.cellForRow(at: IndexPath(row: insertCount - 1, section: 0)) {
-                let contentOffset = cell.maxY - tableHeaderHeight + self.tableView.contentOffset.y
-                self.tableView.setContentOffset(CGPoint(x: 0, y: contentOffset) , animated: false)
-            }
-            self.dragTimes = 0
-            self.historyLoading = false
-            self.refreshState = .unRefresh
+        var contentHeight: CGFloat = 0
+        for index in 0..<numberOfCount {
+            let cellHeight = tableView.delegate!.tableView!(tableView, heightForRowAt: IndexPath(row: index, section: 0))
+            contentHeight += cellHeight
         }
-       
+        return contentHeight
     }
-    
 
 }

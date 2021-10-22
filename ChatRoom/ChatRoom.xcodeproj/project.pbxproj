@@ -23,7 +23,6 @@
 		660EC1C4271EA46A00CB0E42 /* ScreenAppearence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1C3271EA46A00CB0E42 /* ScreenAppearence.swift */; };
 		660EC1C6271EB9CC00CB0E42 /* TextModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1C5271EB9CC00CB0E42 /* TextModel.swift */; };
 		660EC1C8271FAB1F00CB0E42 /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */; };
-		660EC1CB272101B900CB0E42 /* ChatTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1CA272101B900CB0E42 /* ChatTableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +44,6 @@
 		660EC1C3271EA46A00CB0E42 /* ScreenAppearence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAppearence.swift; sourceTree = "<group>"; };
 		660EC1C5271EB9CC00CB0E42 /* TextModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextModel.swift; sourceTree = "<group>"; };
 		660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomViewController.swift; sourceTree = "<group>"; };
-		660EC1CA272101B900CB0E42 /* ChatTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +109,6 @@
 			children = (
 				660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */,
 				660EC1B6271E4F2F00CB0E42 /* ChatInputView.swift */,
-				660EC1CA272101B900CB0E42 /* ChatTableView.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -200,7 +197,6 @@
 				660EC1C4271EA46A00CB0E42 /* ScreenAppearence.swift in Sources */,
 				660EC1C2271E76E700CB0E42 /* Notification+Extension.swift in Sources */,
 				660EC1BE271E593400CB0E42 /* TextMessageContentView.swift in Sources */,
-				660EC1CB272101B900CB0E42 /* ChatTableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
