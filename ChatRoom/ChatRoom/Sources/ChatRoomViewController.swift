@@ -13,7 +13,11 @@ private let tableFooterHeight: CGFloat = 12.0
 
 class ChatRoomViewController: UIViewController {
 
-    public var loadingPageDelayInterval: TimeInterval = 0.6
+    /// Delay update UI when loading history messages completed.
+    public var delayUpdateUITimeInterval: TimeInterval = 0.6
+    
+    /// Delay update UI immediately when loading history messages completed.
+    public var delayImmediateUpdateUITimeInterval: UInt32 = 150000
     
     private enum RefreshState {
         case normal
@@ -166,7 +170,7 @@ class ChatRoomViewController: UIViewController {
     /// Reload data and update UI when loading history page
     func reloadDataWhenLoadingPage() {
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + loadingPageDelayInterval) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayUpdateUITimeInterval) {
  
             if self.refreshState != .loadingDataCompleted {
                 return
@@ -296,7 +300,9 @@ extension ChatRoomViewController:  UITableViewDelegate {
         if refreshState == .loadingDataCompleted {
             scrollView.bounces = false
             // delay to refresh
-            usleep(150000)
+            if delayImmediateUpdateUITimeInterval > 0 {
+                usleep(delayImmediateUpdateUITimeInterval)
+            }
     
             /**
              由于部分 iOS 版本通过 `scrollView.contentSize` 得到的值不正确，所以只能通过计算所有 cell 的高度来计算分页前后增加的高度
