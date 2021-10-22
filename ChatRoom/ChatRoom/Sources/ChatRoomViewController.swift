@@ -316,7 +316,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
             let beforeCellsHeight = getCellsHeight()
             reloadDataImmidiate()
             let endCellsHeight = getCellsHeight()
-            // 在插入新的cell前后 tableHeaderView，插入后被移除，所以要减去 tableHeaderView 的高度
+            // 在插入新的 cell前添加了 tableHeaderView，插入完成后 tableHeaderView 被移除，所以要减去 tableHeaderView 的高度
             let offsetY = endCellsHeight - beforeCellsHeight - tableHeaderHeight + scrollView.contentOffset.y
             scrollView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             loadPageSuccessContentOffset = scrollView.contentOffset
