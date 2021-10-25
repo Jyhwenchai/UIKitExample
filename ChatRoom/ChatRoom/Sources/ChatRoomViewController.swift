@@ -381,7 +381,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
     
     private func getCellsHeight() -> CGFloat {
         let numberOfCount = tableView.numberOfRows(inSection: 0)
-        guard numberOfCount > 0 else  { return tableView.contentSize.height }
+        guard numberOfCount > 0 else  { return 0 }
         
         var contentHeight: CGFloat = 0
         for index in 0..<numberOfCount {
