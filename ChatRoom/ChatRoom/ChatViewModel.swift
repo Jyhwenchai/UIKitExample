@@ -18,7 +18,7 @@ class ChatViewModel {
     
     init() {
         var addMessages: [TextModel] = []
-        for index in 0..<10 {
+        for index in 0..<20 {
             let model = TextModel(text: "new message \(count) - \(index)", direction: .left, contentSize: CGSize(width: 200, height: 40))
             addMessages.append(model)
         }

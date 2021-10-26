@@ -19,7 +19,7 @@ class ChatRoomViewController: UIViewController {
     /// Delay update UI immediately when loading history messages completed.
     public var delayImmediateUpdateUITimeInterval: UInt32 = 150000
     
-    public var globalAnimateTimeInterval: TimeInterval = 0.15
+    public var globalAnimateTimeInterval: TimeInterval = 0.25
     
     private enum RefreshState {
         case normal
@@ -173,9 +173,12 @@ class ChatRoomViewController: UIViewController {
         }
         refreshState = .updatingUI
         self.indicatorView.stopAnimating()
-        self.tableView.tableHeaderView = nil
+//        self.tableView.tableHeaderView = nil
         UIView.performWithoutAnimation {
             self.tableView.reloadData()
+        }
+        if !self.hasHistoryMessage() {
+            self.tableView.tableHeaderView = nil
         }
         self.tableView.setNeedsLayout()
         self.tableView.layoutIfNeeded()
@@ -193,11 +196,15 @@ class ChatRoomViewController: UIViewController {
             
             self.refreshState = .updatingUI
             self.indicatorView.stopAnimating()
-            self.tableView.tableHeaderView = nil
+//            self.tableView.tableHeaderView = nil
             
             let reloadBeforeCount = self.tableView.numberOfRows(inSection: 0)
             self.tableView.reloadData()
             let reloadEndCount = self.tableView.numberOfRows(inSection: 0)
+            
+            if !self.hasHistoryMessage() {
+                self.tableView.tableHeaderView = nil
+            }
             
             self.tableView.setNeedsLayout()
             self.tableView.layoutIfNeeded()
@@ -297,11 +304,17 @@ class ChatRoomViewController: UIViewController {
         tableView.reloadData()
         tableView.setNeedsLayout()
         tableView.layoutIfNeeded()
-        let cellHeight = getCellsHeight()
-        let offset = cellHeight + tableFooterHeight - tableView.height
         // The default tableView.contentOffset.y value is -tableView.safeAreaInsets.top
-        if  offset <= tableView.contentOffset.y { return }
-        tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
+        let cellHeight = getCellsHeight()
+        var offset = cellHeight + tableFooterHeight - tableView.height
+        if hasHistoryMessage() {
+            offset += tableHeaderHeight
+            tableView.tableHeaderView = tableHeaderView
+            tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
+        } else {
+            if  offset <= tableView.contentOffset.y { return }
+            tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
+        }
     }
     
     //MARK: - Component View Handler
@@ -332,7 +345,9 @@ class ChatRoomViewController: UIViewController {
         
         if type == .input { return }
         layoutTableView(with: componentFrame)
-        scrollToBottomWhenComponentWillShow()
+        if type != .none {
+            scrollToBottomWhenComponentWillShow()
+        }
     }
     
     private func showComponentView(_ componentView: UIView) {
@@ -436,12 +451,12 @@ extension ChatRoomViewController:  UITableViewDelegate {
         }
         
         let contentOffsetY = scrollView.contentOffset.y
-        if contentOffsetY < -scrollView.safeAreaInsets.top && hasHistoryMessage()
+        if contentOffsetY < 0 && hasHistoryMessage()
             && !indicatorView.isAnimating
             && componentFrame == .zero
             && refreshState == .normal {
             refreshState = .prepared
-            tableView.tableHeaderView = tableHeaderView
+//            tableView.tableHeaderView = tableHeaderView
             indicatorView.startAnimating()
         }
     }
@@ -472,7 +487,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
     /// cancel loading data
     private func cancelLoadingPage() {
         self.indicatorView.stopAnimating()
-        self.tableView.tableHeaderView = nil
+//        self.tableView.tableHeaderView = nil
         self.tableView.scrollsToTop = true
         self.tableView.setNeedsLayout()
         self.tableView.layoutIfNeeded()
