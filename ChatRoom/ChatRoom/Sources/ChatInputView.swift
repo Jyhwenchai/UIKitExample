@@ -123,7 +123,9 @@ extension ChatInputView: UITextViewDelegate {
         if let _ = textView.text {
             let size = textView.sizeThatFits(CGSize(width: textView.width, height: 0))
             let viewHeight: CGFloat = min(max(ceil(size.height), minInputHeight), maxInputHeight) + inputMarginSpacing
-            updateFrameClosure?(viewHeight)
+            if viewHeight != height {
+                updateFrameClosure?(viewHeight)
+            }
         }
     }
     

@@ -19,6 +19,8 @@ class ChatRoomViewController: UIViewController {
     /// Delay update UI immediately when loading history messages completed.
     public var delayImmediateUpdateUITimeInterval: UInt32 = 150000
     
+    public var globalAnimateTimeInterval: TimeInterval = 0.15
+    
     private enum RefreshState {
         case normal
         case prepared
@@ -35,6 +37,7 @@ class ChatRoomViewController: UIViewController {
         didSet { componentTypeDidChanged(oldVlaue: oldValue) }
     }
     private let componentAnimateType: UIView.AnimationOptions = .curveEaseInOut
+    private var componentWillShow: Bool = false
     
     //MARK: - Views
     let chatInputView: ChatInputView = ChatInputView()
@@ -84,6 +87,7 @@ class ChatRoomViewController: UIViewController {
         initView()
         initBind()
         initNotification()
+//        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: view.width, height: 100))
     }
     
     func initNav() {
@@ -224,7 +228,7 @@ class ChatRoomViewController: UIViewController {
         
         if componentFrame == .zero {
             // Changing tableView height to the appropriate value if chatInputView's height changed when components hide.
-            UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+            UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
                 self.tableView.frame = CGRect(x: 0, y: 0, width: self.view.width, height: self.view.height - self.chatInputView.height - tabBarAdditionHeight)
                 self.chatInputView.y = self.tableView.height
             }
@@ -234,7 +238,7 @@ class ChatRoomViewController: UIViewController {
             // The tableView height should be maintained a fixed value when components showed.
             let minTableHeight = self.view.height - chatInputView.minHeight - tabBarAdditionHeight
             if minTableHeight != tableView.height {
-                UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+                UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
                     self.tableView.height = minTableHeight
                 }
             }
@@ -251,11 +255,17 @@ class ChatRoomViewController: UIViewController {
         let contentHeight = tableView.contentSize.height
  
         var y: CGFloat = 0
-        if contentHeight > visiableHeight && abs(maxOffset) != abs(tableView.y) {
+        if contentHeight > visiableHeight {
+            //FIXME: - Maybe can optimize this condition.
+            if abs(maxOffset) == abs(tableView.y) { return }
             let offset = contentHeight - visiableHeight
             y = max(-offset, -maxOffset)
-            UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+            UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
                 self.tableView.y = y
+                self.chatInputView.y = self.componentFrame.minY - self.chatInputView.height
+            }
+        } else {
+            UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
                 self.chatInputView.y = self.componentFrame.minY - self.chatInputView.height
             }
         }
@@ -263,9 +273,22 @@ class ChatRoomViewController: UIViewController {
     }
     
     private func scrollToBottomWhenComponentWillShow() {
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
-            self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: false)
+        if componentWillShow {
+            // By execute `scrollRectToVisible` method twice can fix scroll to bottom bug.
+            UIView.performWithoutAnimation {
+                self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: false)
+            }
+            tableView.setNeedsLayout()
+            tableView.layoutIfNeeded()
+            UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
+                self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: false)
+            }
+        } else {
+            self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: true)
         }
+        
+        componentWillShow = false
+        
     }
     
     /// Call this method when first load data.(called in the `viewDidLayoutSubviews` method)
@@ -286,6 +309,8 @@ class ChatRoomViewController: UIViewController {
     private func componentTypeDidChanged(oldVlaue: ChatInputView.SelectComponentType) {
         dismissPreviousComponent(with: oldVlaue)
         showCurrentComponent(with: componentType)
+        // Check component state from dismissing transform to show
+        componentWillShow = oldVlaue == .none && componentType != .none
     }
     
     private func dismissPreviousComponent(with type: ChatInputView.SelectComponentType) {
@@ -307,8 +332,8 @@ class ChatRoomViewController: UIViewController {
         }
         
         if type == .input { return }
-        scrollToBottomWhenComponentWillShow()
         layoutTableView(with: componentFrame)
+        scrollToBottomWhenComponentWillShow()
     }
     
     private func showComponentView(_ componentView: UIView) {
@@ -316,13 +341,13 @@ class ChatRoomViewController: UIViewController {
         let viewHeight = componentView.height
         componentFrame = CGRect(x: 0, y: view.height - viewHeight, width: self.view.width, height: viewHeight)
         view.addSubview(componentView)
-        UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+        UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
             componentView.frame = self.componentFrame
         }
     }
     
     private func hiddenComponentView(_ componentView: UIView) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+        UIView.animate(withDuration: globalAnimateTimeInterval, delay: 0, options: componentAnimateType) {
             componentView.y = self.view.height
         } completion: { _ in
             componentView.removeFromSuperview()
