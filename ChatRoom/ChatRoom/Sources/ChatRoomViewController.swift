@@ -87,7 +87,6 @@ class ChatRoomViewController: UIViewController {
         initView()
         initBind()
         initNotification()
-//        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: view.width, height: 100))
     }
     
     func initNav() {
@@ -437,7 +436,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
         }
         
         let contentOffsetY = scrollView.contentOffset.y
-        if contentOffsetY < 0 && hasHistoryMessage()
+        if contentOffsetY < -scrollView.safeAreaInsets.top && hasHistoryMessage()
             && !indicatorView.isAnimating
             && componentFrame == .zero
             && refreshState == .normal {
