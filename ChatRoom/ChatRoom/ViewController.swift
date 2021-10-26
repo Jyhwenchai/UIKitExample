@@ -56,7 +56,7 @@ class ViewController: ChatRoomViewController {
     }
     
     override func loadingHistoryMessages(completion: (Bool) -> Void) {
-        // load history message here.
+        // load history message here, if `hasHistoryMessage` return true
         self.viewModel.loadMoreMessage()
         // return true, if loading successful. otherwise return false
         completion(true)
