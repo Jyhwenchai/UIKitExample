@@ -8,25 +8,10 @@
 import UIKit
 
 
-enum Direction {
-    case left
-    case right
-}
 
 class TextMessageCell: UITableViewCell {
     
-    var direction: Direction = .left {
-        didSet {
-            if direction == .left {
-                messageView.bgView.backgroundColor = UIColor.white
-                messageView.textView.textColor = UIColor.darkText
-            } else {
-                messageView.bgView.backgroundColor = UIColor.systemOrange
-                messageView.textView.textColor = UIColor.white
-            }
-        }
-    }
-    
+    var isSender: Bool = false
     var contentSize: CGSize = .zero
     
     //MARK: - Views
@@ -56,7 +41,7 @@ class TextMessageCell: UITableViewCell {
         super.layoutSubviews()
         
         var x: CGFloat = 0
-        if case Direction.left = direction {
+        if !isSender {
             avatar.frame = CGRect(x: 15, y: 16, width: 40, height: 40)
             x = avatar.maxX + 5
         } else {
@@ -65,5 +50,18 @@ class TextMessageCell: UITableViewCell {
         }
         
         messageView.frame = CGRect(origin: CGPoint(x: x, y: avatar.y), size: contentSize)
+    }
+    
+    func configureCellWith(model: TextModel) {
+        messageView.textView.text = model.text
+        contentSize = model.contentSize
+        isSender = model.direction == .right
+        if model.direction == .left {
+            messageView.bgView.backgroundColor = UIColor.white
+            messageView.textView.textColor = UIColor.darkText
+        } else {
+            messageView.bgView.backgroundColor = UIColor.systemOrange
+            messageView.textView.textColor = UIColor.white
+        }
     }
 }

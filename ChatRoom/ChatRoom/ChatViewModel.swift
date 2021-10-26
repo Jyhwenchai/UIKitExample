@@ -26,7 +26,7 @@ class ChatViewModel {
     }
     
     func addMessage(_ text: String) {
-        let direction: Direction = Int8.random(in: 1...Int8.max) % 2 == 0 ? .left : .right
+        let direction: TextModel.Direction = Int8.random(in: 1...Int8.max) % 2 == 0 ? .left : .right
         let size = calculateMessageSize(text)
         let model = TextModel(text: text, direction: direction, contentSize: size)
         messages.append(model)

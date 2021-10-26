@@ -13,9 +13,18 @@ private let inputMarginSpacing: CGFloat = 16
 
 class ChatInputView: UIView {
 
+    enum SelectComponentType {
+        case none
+        case voice
+        case input
+        case emoji
+        case more
+    }
     
     var confirmInputClosure: ((String) -> Void)?
     var updateFrameClosure: ((CGFloat) -> Void)?
+    var selectComponentClosure: ((SelectComponentType) -> Void)?
+    
     
     let voiceButton: UIButton = {
         let button = UIButton()
@@ -26,6 +35,7 @@ class ChatInputView: UIView {
     let emojiButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "icon_expression"), for: .normal)
+        button.addTarget(self, action: #selector(emojiButtonAction), for: .touchUpInside)
         return button
     }()
     
@@ -33,6 +43,7 @@ class ChatInputView: UIView {
     let addButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "icon_more2"), for: .normal)
+        button.addTarget(self, action: #selector(moreButtonAction), for: .touchUpInside)
         return button
     }()
     
@@ -81,9 +92,21 @@ class ChatInputView: UIView {
         lineView.frame = CGRect(x: 0, y: 0, width: contentView.width, height: 1)
     }
     
+    @objc func emojiButtonAction() {
+        selectComponentClosure?(.emoji)
+    }
+    
+    @objc func moreButtonAction() {
+        selectComponentClosure?(.more)
+    }
 }
 
 extension ChatInputView: UITextViewDelegate {
+    
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        selectComponentClosure?(.input)
+        return true
+    }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
@@ -109,5 +132,9 @@ extension ChatInputView: UITextViewDelegate {
 extension ChatInputView {
     var minHeight: CGFloat {
         minInputHeight + inputMarginSpacing
+    }
+    
+    var maxHeight: CGFloat {
+        maxInputHeight + inputMarginSpacing
     }
 }

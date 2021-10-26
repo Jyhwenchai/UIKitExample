@@ -8,6 +8,12 @@
 import UIKit
 
 struct TextModel {
+    
+    enum Direction {
+        case left
+        case right
+    }
+
     var text: String
     var direction: Direction
     var contentSize: CGSize

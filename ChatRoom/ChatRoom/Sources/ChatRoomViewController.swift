@@ -27,10 +27,14 @@ class ChatRoomViewController: UIViewController {
         case updatingUI
     }
     
-    private var keyboardFrame: CGRect = .zero
     private var refreshState: RefreshState = .normal
     private var loadPageSuccessContentOffset: CGPoint = .zero
     private var viewDidLayout: Bool = false
+    private var componentFrame: CGRect = .zero
+    private var componentType: ChatInputView.SelectComponentType = .none {
+        didSet { componentTypeDidChanged(oldVlaue: oldValue) }
+    }
+    private let componentAnimateType: UIView.AnimationOptions = .curveEaseInOut
     
     //MARK: - Views
     let chatInputView: ChatInputView = ChatInputView()
@@ -59,6 +63,19 @@ class ChatRoomViewController: UIViewController {
         return tableView
     }()
     
+    /// Example View
+    lazy var emojiView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: view.height, width: view.width, height: 200))
+        view.backgroundColor = UIColor.systemYellow
+        return view
+    }()
+    
+    lazy var moreView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: view.height, width: view.width, height: 400))
+        view.backgroundColor = UIColor.systemPink
+        return view
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -85,7 +102,7 @@ class ChatRoomViewController: UIViewController {
         tableView.frame = frame
         view.addSubview(tableView)
         
-        chatInputView.frame = CGRect(x: 0, y: view.height - inputViewMinHeight - tabBarAdditionHeight, width: view.width, height: inputViewMinHeight)
+        chatInputView.frame = CGRect(x: 0, y: frame.height, width: view.width, height: inputViewMinHeight)
         view.addSubview(chatInputView)
     }
 
@@ -94,10 +111,10 @@ class ChatRoomViewController: UIViewController {
         chatInputView.confirmInputClosure = { [weak self] text in
             guard let self = self else { return }
             
-            let maxOffset = self.keyboardFrame.height - tabBarAdditionHeight
+            let maxOffset = self.componentFrame.height - tabBarAdditionHeight
             // reset inputView frame and correct tableView offset position
-            UIView.animate(withDuration: 0.20, delay: 0, options: .curveLinear) {
-                self.chatInputView.y = self.keyboardFrame.minY - self.chatInputView.minHeight
+            UIView.animate(withDuration: 0.20, delay: 0, options: self.componentAnimateType) {
+                self.chatInputView.y = self.componentFrame.minY - self.chatInputView.minHeight
                 self.chatInputView.height = self.chatInputView.minHeight
                 self.chatInputView.layoutIfNeeded()
                 if abs(self.tableView.y) > abs(maxOffset) {
@@ -109,44 +126,39 @@ class ChatRoomViewController: UIViewController {
         
         chatInputView.updateFrameClosure = { [weak self] height in
             guard let self = self else { return }
-            UIView.animate(withDuration: 0.20, delay: 0, options: .curveLinear) {
+            UIView.animate(withDuration: 0.20, delay: 0, options: self.componentAnimateType) {
                 self.chatInputView.y -= (height - self.chatInputView.height)
                 self.chatInputView.height = height
                 self.chatInputView.layoutIfNeeded()
-                self.layoutTableView(with: self.keyboardFrame)
+                self.layoutTableView(with: self.componentFrame)
             }
+        }
+        
+        chatInputView.selectComponentClosure = { [weak self] type in
+            guard let self = self else { return }
+            self.componentType = type
         }
     }
     
-
+   
     
     private var keyboardWillShowToken: NSObjectProtocol?
-    private var keyboardWillHideToken: NSObjectProtocol?
 
     func initNotification() {
         
         self.keyboardWillShowToken = NotificationCenter.default.addObserver(forName: UIViewController.keyboardWillShowNotification, object: nil, queue: nil) { [weak self] notification in
             guard let self = self else { return }
-            if self.keyboardFrame == .zero {
-                self.scrollToBottomWhenKeyBoardWillShow()
+            if self.componentFrame == .zero {
+                self.scrollToBottomWhenComponentWillShow()
             }
-            self.keyboardFrame = notification.keyboardFrame
-            self.chatInputView.frame = CGRect(x: 0, y: self.keyboardFrame.minY - self.chatInputView.height, width: self.chatInputView.width, height: self.chatInputView.height)
-            self.layoutTableView(with: self.keyboardFrame)
+            self.componentFrame = notification.keyboardFrame
+            self.layoutTableView(with: self.componentFrame)
         }
-        
-        self.keyboardWillHideToken = NotificationCenter.default.addObserver(forName: UIViewController.keyboardWillHideNotification, object: nil, queue: nil, using: { [weak self] notification in
-            guard let self = self else { return }
-            self.keyboardFrame = .zero
-            self.chatInputView.frame = CGRect(x: 0, y: self.view.height - self.chatInputView.minHeight - tabBarAdditionHeight, width: self.chatInputView.width, height: self.chatInputView.height)
-            self.layoutTableView(with: .zero)
-        })
         
     }
 
     deinit {
         keyboardWillShowToken = nil
-        keyboardWillHideToken = nil
     }
     
     //MARK: Main Method
@@ -203,43 +215,54 @@ class ChatRoomViewController: UIViewController {
         self.tableView.reloadData()
         self.tableView.setNeedsLayout()
         self.tableView.layoutIfNeeded()
-        self.layoutTableView(with: self.keyboardFrame)
-        self.scrollToBottomWhenKeyBoardWillShow()
+        self.layoutTableView(with: componentFrame)
+        self.scrollToBottomWhenComponentWillShow()
     }
     
     /// Update tableView frame when keyboard or inputView frame changed.
-    private func layoutTableView(with keyboardFrame: CGRect) {
+    private func layoutTableView(with componentFrame: CGRect) {
         
-        if keyboardFrame == .zero {
-            UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
-                self.tableView.y = 0
+        if componentFrame == .zero {
+            // Changing tableView height to the appropriate value if chatInputView's height changed when components hide.
+            UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+                self.tableView.frame = CGRect(x: 0, y: 0, width: self.view.width, height: self.view.height - self.chatInputView.height - tabBarAdditionHeight)
+                self.chatInputView.y = self.tableView.height
             }
             return
+        } else {
+            
+            // The tableView height should be maintained a fixed value when components showed.
+            let minTableHeight = self.view.height - chatInputView.minHeight - tabBarAdditionHeight
+            if minTableHeight != tableView.height {
+                UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+                    self.tableView.height = minTableHeight
+                }
+            }
         }
         
+        let screenHeight = UIScreen.main.bounds.height
+        let statusBarAndNavigationBarHeight = ScreenAppearence.statusBarAndNavigationBarHeight
         // 由于 tableView 的高度 = view.height - inputViewHeight - tabBarAdditionHeight
         // 所以最大偏移量 maxOffset 的值计算方式如下 keyboardFrame.height - inputViewMinHeight - tabBarAdditionHeight + inputHeight(当前chatInputView的真实高度)
         let inputViewHeight = chatInputView.height
-        let maxOffset = keyboardFrame.height - chatInputView.minHeight - tabBarAdditionHeight + inputViewHeight
-        let screenHeight = UIScreen.main.bounds.height
-        let statusBarAndNavigationBarHeight = ScreenAppearence.statusBarAndNavigationBarHeight
+        let maxOffset = componentFrame.height - chatInputView.minHeight - tabBarAdditionHeight + inputViewHeight
         // 显示键盘时可见区域的高度
-        let visiableHeight = screenHeight - keyboardFrame.height - inputViewHeight - statusBarAndNavigationBarHeight
-        
+        let visiableHeight = screenHeight - componentFrame.height - inputViewHeight - statusBarAndNavigationBarHeight
         let contentHeight = tableView.contentSize.height
  
         var y: CGFloat = 0
-        if contentHeight > visiableHeight && abs(maxOffset) > abs(tableView.y) {
+        if contentHeight > visiableHeight && abs(maxOffset) != abs(tableView.y) {
             let offset = contentHeight - visiableHeight
             y = max(-offset, -maxOffset)
-            UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
+            UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
                 self.tableView.y = y
+                self.chatInputView.y = self.componentFrame.minY - self.chatInputView.height
             }
         }
         
     }
     
-    private func scrollToBottomWhenKeyBoardWillShow() {
+    private func scrollToBottomWhenComponentWillShow() {
         UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
             self.tableView.scrollRectToVisible(self.tableView.tableFooterView!.frame, animated: false)
         }
@@ -248,6 +271,7 @@ class ChatRoomViewController: UIViewController {
     /// Call this method when first load data.(called in the `viewDidLayoutSubviews` method)
     func scrollToBottom(animated: Bool) {
         defer { viewDidLayout = true }
+        if viewDidLayout { return }
         tableView.reloadData()
         tableView.setNeedsLayout()
         tableView.layoutIfNeeded()
@@ -258,6 +282,53 @@ class ChatRoomViewController: UIViewController {
         tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
     }
     
+    //MARK: - Component View Handler
+    private func componentTypeDidChanged(oldVlaue: ChatInputView.SelectComponentType) {
+        dismissPreviousComponent(with: oldVlaue)
+        showCurrentComponent(with: componentType)
+    }
+    
+    private func dismissPreviousComponent(with type: ChatInputView.SelectComponentType) {
+        switch type {
+        case .none: break
+        case .input: view.endEditing(true)
+        case .emoji: hiddenComponentView(emojiView)
+        case .more: hiddenComponentView(moreView)
+        default: break
+        }
+    }
+    
+    private func showCurrentComponent(with type: ChatInputView.SelectComponentType) {
+        switch type {
+        case .none: componentFrame = .zero
+        case .emoji: showComponentView(emojiView)
+        case .more: showComponentView(moreView)
+        default: break
+        }
+        
+        if type == .input { return }
+        scrollToBottomWhenComponentWillShow()
+        layoutTableView(with: componentFrame)
+    }
+    
+    private func showComponentView(_ componentView: UIView) {
+        view.endEditing(true)
+        let viewHeight = componentView.height
+        componentFrame = CGRect(x: 0, y: view.height - viewHeight, width: self.view.width, height: viewHeight)
+        view.addSubview(componentView)
+        UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+            componentView.frame = self.componentFrame
+        }
+    }
+    
+    private func hiddenComponentView(_ componentView: UIView) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: componentAnimateType) {
+            componentView.y = self.view.height
+        } completion: { _ in
+            componentView.removeFromSuperview()
+        }
+    }
+
     //MARK: Implemented by subclasses
     /// Implemented by subclasses
     func inputViewConfirmInput(_ text: String) {
@@ -276,6 +347,8 @@ class ChatRoomViewController: UIViewController {
     }
     
 }
+
+
 
 //MARK: - UITableViewDataSource initialize
 extension ChatRoomViewController: UITableViewDataSource {
@@ -296,7 +369,10 @@ extension ChatRoomViewController:  UITableViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         
-        view.endEditing(true)
+        if componentType != .none {
+            componentType = .none
+        }
+        
         if refreshState == .loadingDataCompleted {
             scrollView.bounces = false
             // delay to refresh
@@ -338,7 +414,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         if contentOffsetY < 0 && hasHistoryMessage()
             && !indicatorView.isAnimating
-            && keyboardFrame == .zero
+            && componentFrame == .zero
             && refreshState == .normal {
             refreshState = .prepared
             tableView.tableHeaderView = tableHeaderView

@@ -64,6 +64,7 @@ class ViewController: ChatRoomViewController {
     
     override func hasHistoryMessage() -> Bool {
         return viewModel.messages.count > 10
+//        return false
     }
     
 }
@@ -78,9 +79,7 @@ extension ViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TextMessageCell") as! TextMessageCell
         let model = viewModel.messages[indexPath.item]
-        cell.direction = model.direction
-        cell.messageView.textView.text = model.text
-        cell.contentSize = model.contentSize
+        cell.configureCellWith(model: model)
         return cell
     }
     
