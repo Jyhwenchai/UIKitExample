@@ -177,9 +177,6 @@ class ChatRoomViewController: UIViewController {
         UIView.performWithoutAnimation {
             self.tableView.reloadData()
         }
-        if !self.hasHistoryMessage() {
-            self.tableView.tableHeaderView = nil
-        }
         self.tableView.setNeedsLayout()
         self.tableView.layoutIfNeeded()
         self.refreshState = .normal
@@ -215,7 +212,6 @@ class ChatRoomViewController: UIViewController {
                 self.tableView.setContentOffset(CGPoint(x: 0, y: contentOffset) , animated: false)
             }
             self.refreshState = .normal
-            self.tableView.bounces = true
         }
        
     }
@@ -319,10 +315,10 @@ class ChatRoomViewController: UIViewController {
     
     //MARK: - Component View Handler
     private func componentTypeDidChanged(oldVlaue: ChatInputView.SelectComponentType) {
-        dismissPreviousComponent(with: oldVlaue)
-        showCurrentComponent(with: componentType)
         // Check component state from dismissing transform to show
         componentWillShow = oldVlaue == .none && componentType != .none
+        dismissPreviousComponent(with: oldVlaue)
+        showCurrentComponent(with: componentType)
     }
     
     private func dismissPreviousComponent(with type: ChatInputView.SelectComponentType) {
@@ -431,8 +427,13 @@ extension ChatRoomViewController:  UITableViewDelegate {
             let beforeCellsHeight = getCellsHeight()
             reloadDataImmidiate()
             let endCellsHeight = getCellsHeight()
+            var headerHeight: CGFloat = 0
+            if !self.hasHistoryMessage() {
+                headerHeight = tableHeaderHeight
+                self.tableView.tableHeaderView = nil
+            }
             // 在插入新的 cell前添加了 tableHeaderView，插入完成后 tableHeaderView 被移除，所以要减去 tableHeaderView 的高度
-            let offsetY = endCellsHeight - beforeCellsHeight - tableHeaderHeight + scrollView.contentOffset.y
+            let offsetY = endCellsHeight - beforeCellsHeight - headerHeight + scrollView.contentOffset.y
             scrollView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             loadPageSuccessContentOffset = scrollView.contentOffset
             scrollView.bounces = true
