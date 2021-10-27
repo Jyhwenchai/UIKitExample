@@ -22,7 +22,7 @@ class ViewController: ChatRoomViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        scrollToBottom(animated: false)
+        reloadDataWhenDataFirstLoad()
     }
     
     @objc func testAction() {

@@ -173,7 +173,6 @@ class ChatRoomViewController: UIViewController {
         }
         refreshState = .updatingUI
         self.indicatorView.stopAnimating()
-//        self.tableView.tableHeaderView = nil
         UIView.performWithoutAnimation {
             self.tableView.reloadData()
         }
@@ -193,7 +192,6 @@ class ChatRoomViewController: UIViewController {
             
             self.refreshState = .updatingUI
             self.indicatorView.stopAnimating()
-//            self.tableView.tableHeaderView = nil
             
             let reloadBeforeCount = self.tableView.numberOfRows(inSection: 0)
             self.tableView.reloadData()
@@ -294,7 +292,7 @@ class ChatRoomViewController: UIViewController {
     }
     
     /// Call this method when first load data.(called in the `viewDidLayoutSubviews` method)
-    func scrollToBottom(animated: Bool) {
+    func reloadDataWhenDataFirstLoad() {
         defer { viewDidLayout = true }
         if viewDidLayout { return }
         tableView.reloadData()
@@ -306,10 +304,10 @@ class ChatRoomViewController: UIViewController {
         if hasHistoryMessage() {
             offset += tableHeaderHeight
             tableView.tableHeaderView = tableHeaderView
-            tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
+            tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: false)
         } else {
             if  offset <= tableView.contentOffset.y { return }
-            tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: animated)
+            tableView.setContentOffset(CGPoint(x: 0, y: offset), animated: false)
         }
     }
     
@@ -457,7 +455,6 @@ extension ChatRoomViewController:  UITableViewDelegate {
             && componentFrame == .zero
             && refreshState == .normal {
             refreshState = .prepared
-//            tableView.tableHeaderView = tableHeaderView
             indicatorView.startAnimating()
         }
     }
@@ -488,7 +485,6 @@ extension ChatRoomViewController:  UITableViewDelegate {
     /// cancel loading data
     private func cancelLoadingPage() {
         self.indicatorView.stopAnimating()
-//        self.tableView.tableHeaderView = nil
         self.tableView.scrollsToTop = true
         self.tableView.setNeedsLayout()
         self.tableView.layoutIfNeeded()
