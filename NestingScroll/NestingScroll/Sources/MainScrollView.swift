@@ -71,7 +71,6 @@ class MainScrollView: UIScrollView {
         
         contentCollectionView.scrollViewWillBeginDraggingHandler = { [weak self] scrollView in
             guard let self = self else { return }
-            self.lockCurrentContentOffset = true
             self.currentContentOffset = self.contentOffset
             self.contentDelegate?.contentScrollViewWillBeginDragging?(scrollView)
         }
@@ -92,6 +91,7 @@ class MainScrollView: UIScrollView {
         contentCollectionView.scrollViewDidScrollHandler = { [weak self] scrollView in
             guard let self = self else { return }
             guard !self.isDisabledDelegateCallback else { return }
+            self.lockCurrentContentOffset = true
             self.contentDelegate?.contentScrollViewDidScroll?(scrollView)
         }
         
