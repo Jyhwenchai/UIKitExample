@@ -431,6 +431,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
                 self.tableView.tableHeaderView = nil
             }
             // 在插入新的 cell前添加了 tableHeaderView，插入完成后 tableHeaderView 被移除，所以要减去 tableHeaderView 的高度
+            
             let offsetY = endCellsHeight - beforeCellsHeight - headerHeight + scrollView.contentOffset.y
             scrollView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
             loadPageSuccessContentOffset = scrollView.contentOffset
@@ -482,7 +483,7 @@ extension ChatRoomViewController:  UITableViewDelegate {
         }
     }
     
-    /// cancel loading data
+    /// cancel loading state
     private func cancelLoadingPage() {
         self.indicatorView.stopAnimating()
         self.tableView.scrollsToTop = true
