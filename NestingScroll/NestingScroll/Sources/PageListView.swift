@@ -33,7 +33,7 @@ class PageListView: UICollectionView {
     var scrollMainScrollViewToSectionTop: (() -> ())?
     var pageCount: Int = 0
     
-    init(frame: CGRect) {
+    init(frame: CGRect = .zero) {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         super.init(frame: frame, collectionViewLayout: layout)
