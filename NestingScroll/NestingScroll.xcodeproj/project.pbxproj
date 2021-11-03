@@ -14,13 +14,13 @@
 		66312F71272A507E006CB9FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66312F70272A507E006CB9FE /* Assets.xcassets */; };
 		66312F74272A507E006CB9FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66312F72272A507E006CB9FE /* LaunchScreen.storyboard */; };
 		66312F7C272A52F8006CB9FE /* SectionFixedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F7B272A52F8006CB9FE /* SectionFixedViewController.swift */; };
-		66312F80272A5326006CB9FE /* ScreenAppearence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F7E272A5326006CB9FE /* ScreenAppearence.swift */; };
-		66312F81272A5326006CB9FE /* UIView+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F7F272A5326006CB9FE /* UIView+Frame.swift */; };
 		66312F89272B8D96006CB9FE /* MainScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F88272B8D96006CB9FE /* MainScrollView.swift */; };
-		66312F8B272B8DAD006CB9FE /* ContentCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8A272B8DAD006CB9FE /* ContentCollectionView.swift */; };
-		66312F8D272B90D9006CB9FE /* ContentListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8C272B90D9006CB9FE /* ContentListCell.swift */; };
+		66312F8B272B8DAD006CB9FE /* PageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8A272B8DAD006CB9FE /* PageListView.swift */; };
 		66312F8F272BD210006CB9FE /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8E272BD210006CB9FE /* SectionView.swift */; };
 		66312F91273121B5006CB9FE /* SectionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F90273121B5006CB9FE /* SectionAnimator.swift */; };
+		66312F932732329C006CB9FE /* TestListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F922732329C006CB9FE /* TestListView.swift */; };
+		66312F9F27326CA9006CB9FE /* UIView+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F9D27326CA9006CB9FE /* UIView+Frame.swift */; };
+		66312FA027326CA9006CB9FE /* ScreenAppearence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F9E27326CA9006CB9FE /* ScreenAppearence.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,13 +33,13 @@
 		66312F73272A507E006CB9FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		66312F75272A507E006CB9FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		66312F7B272A52F8006CB9FE /* SectionFixedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionFixedViewController.swift; sourceTree = "<group>"; };
-		66312F7E272A5326006CB9FE /* ScreenAppearence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScreenAppearence.swift; path = ../../../ChatRoom/ChatRoom/Help/ScreenAppearence.swift; sourceTree = "<group>"; };
-		66312F7F272A5326006CB9FE /* UIView+Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+Frame.swift"; path = "../../../ChatRoom/ChatRoom/Help/UIView+Frame.swift"; sourceTree = "<group>"; };
 		66312F88272B8D96006CB9FE /* MainScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScrollView.swift; sourceTree = "<group>"; };
-		66312F8A272B8DAD006CB9FE /* ContentCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCollectionView.swift; sourceTree = "<group>"; };
-		66312F8C272B90D9006CB9FE /* ContentListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentListCell.swift; sourceTree = "<group>"; };
+		66312F8A272B8DAD006CB9FE /* PageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageListView.swift; sourceTree = "<group>"; };
 		66312F8E272BD210006CB9FE /* SectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionView.swift; sourceTree = "<group>"; };
 		66312F90273121B5006CB9FE /* SectionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionAnimator.swift; sourceTree = "<group>"; };
+		66312F922732329C006CB9FE /* TestListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestListView.swift; sourceTree = "<group>"; };
+		66312F9D27326CA9006CB9FE /* UIView+Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Frame.swift"; sourceTree = "<group>"; };
+		66312F9E27326CA9006CB9FE /* ScreenAppearence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenAppearence.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +77,7 @@
 				66312F67272A507D006CB9FE /* AppDelegate.swift */,
 				66312F69272A507D006CB9FE /* SceneDelegate.swift */,
 				66312F6B272A507D006CB9FE /* NestingScrollViewController.swift */,
+				66312F922732329C006CB9FE /* TestListView.swift */,
 				66312F7B272A52F8006CB9FE /* SectionFixedViewController.swift */,
 				66312F6D272A507D006CB9FE /* Main.storyboard */,
 				66312F70272A507E006CB9FE /* Assets.xcassets */,
@@ -89,8 +90,8 @@
 		66312F7D272A530C006CB9FE /* Helper */ = {
 			isa = PBXGroup;
 			children = (
-				66312F7E272A5326006CB9FE /* ScreenAppearence.swift */,
-				66312F7F272A5326006CB9FE /* UIView+Frame.swift */,
+				66312F9E27326CA9006CB9FE /* ScreenAppearence.swift */,
+				66312F9D27326CA9006CB9FE /* UIView+Frame.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -99,8 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				66312F88272B8D96006CB9FE /* MainScrollView.swift */,
-				66312F8A272B8DAD006CB9FE /* ContentCollectionView.swift */,
-				66312F8C272B90D9006CB9FE /* ContentListCell.swift */,
+				66312F8A272B8DAD006CB9FE /* PageListView.swift */,
 				66312F8E272BD210006CB9FE /* SectionView.swift */,
 				66312F90273121B5006CB9FE /* SectionAnimator.swift */,
 			);
@@ -178,16 +178,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66312F8D272B90D9006CB9FE /* ContentListCell.swift in Sources */,
+				66312F932732329C006CB9FE /* TestListView.swift in Sources */,
 				66312F6C272A507D006CB9FE /* NestingScrollViewController.swift in Sources */,
 				66312F8F272BD210006CB9FE /* SectionView.swift in Sources */,
 				66312F91273121B5006CB9FE /* SectionAnimator.swift in Sources */,
-				66312F8B272B8DAD006CB9FE /* ContentCollectionView.swift in Sources */,
+				66312F8B272B8DAD006CB9FE /* PageListView.swift in Sources */,
 				66312F89272B8D96006CB9FE /* MainScrollView.swift in Sources */,
-				66312F80272A5326006CB9FE /* ScreenAppearence.swift in Sources */,
-				66312F81272A5326006CB9FE /* UIView+Frame.swift in Sources */,
+				66312F9F27326CA9006CB9FE /* UIView+Frame.swift in Sources */,
 				66312F68272A507D006CB9FE /* AppDelegate.swift in Sources */,
 				66312F7C272A52F8006CB9FE /* SectionFixedViewController.swift in Sources */,
+				66312FA027326CA9006CB9FE /* ScreenAppearence.swift in Sources */,
 				66312F6A272A507D006CB9FE /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

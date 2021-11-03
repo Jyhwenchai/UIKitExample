@@ -7,23 +7,18 @@
 
 import UIKit
 
-@objc protocol MainScrollViewDelegate {
-    @objc optional func contentScrollViewWillBeginDragging(_ scrollView: UIScrollView)
-    @objc optional func contentScrollViewDidScroll(_ scrollView: UIScrollView)
-    @objc optional func contentScrollViewDidEndDecelerating(_ scrollView: UIScrollView)
-    @objc optional func contentScrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
+@objc protocol ContentListScrollListener {
+    func contentListDidScroll(_ scrollView: UIScrollView)
 }
 
 class MainScrollView: UIScrollView {
     
-    var isArrowMoved: Bool = true
+    var isAllowMoved: Bool = true
     var sectionHeight: CGFloat = 0
     var headerHeight: CGFloat = 0
     var pageCount: Int = 0 {
         didSet { contentCollectionView.pageCount = pageCount }
     }
-    
-    public var contentDelegate: MainScrollViewDelegate? = nil
     
     private var isDisabledDelegateCallback: Bool = false
     
@@ -42,10 +37,8 @@ class MainScrollView: UIScrollView {
         }
     }
     
-    private var mainViewArrowMovedToken: NSObjectProtocol? = nil
-    
-    private lazy var contentCollectionView: ContentCollectionView = {
-        let collectionView = ContentCollectionView(frame: .zero)
+    lazy var contentCollectionView: PageListView = {
+        let collectionView = PageListView(frame: .zero)
         return collectionView
     }()
     
@@ -62,33 +55,12 @@ class MainScrollView: UIScrollView {
     private func commonInit() {
         addSubview(contentCollectionView)
         delegate = self
-        mainViewArrowMovedToken = NotificationCenter.default.addObserver(forName: MainScrollView.mainViewArrowMovedNotification, object: nil, queue: nil) { [weak self] _ in
-            guard let self = self else { return }
-            self.isArrowMoved = true
-            self.contentCollectionView.isArrowMoved = false
-        }
-        
-        contentCollectionView.scrollViewWillBeginDraggingHandler = { [weak self] scrollView in
-            guard let self = self else { return }
-            self.contentDelegate?.contentScrollViewWillBeginDragging?(scrollView)
-        }
-        
-        contentCollectionView.scrollViewDidEndDeceleratingHandler = { [weak self] scrollView in
-            guard let self = self else { return }
-            self.contentDelegate?.contentScrollViewDidEndDecelerating?(scrollView)
-        }
-        
-        
+       
         contentCollectionView.scrollViewDidScrollHandler = { [weak self] scrollView in
             guard let self = self else { return }
             guard !self.isDisabledDelegateCallback else { return }
-            self.contentDelegate?.contentScrollViewDidScroll?(scrollView)
         }
         
-        contentCollectionView.scrollViewWillEndDraggingHandler = { [weak self] scrollView, velocity, targetContentOffset in
-            guard let self = self else { return }
-            self.contentDelegate?.contentScrollViewWillEndDragging?(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
-        }
         
         contentCollectionView.scrollMainScrollViewToSectionTop = { [weak self] in
             guard let self = self else { return }
@@ -118,7 +90,6 @@ class MainScrollView: UIScrollView {
     
     func scrollToPage(_ index: Int) {
         isDisabledDelegateCallback = true
-        contentCollectionView.isArrowMoved = !isArrowMoved
         contentCollectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: true)
         isDisabledDelegateCallback = false
     }
@@ -137,23 +108,33 @@ class MainScrollView: UIScrollView {
 
 extension MainScrollView: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return !(otherGestureRecognizer.view is ContentCollectionView)
+        return !(otherGestureRecognizer.view is PageListView)
     }
 }
 
 extension MainScrollView: UIScrollViewDelegate {
      func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if contentOffset.y >= headerHeight - safeAreaInsets.top {
-            contentCollectionView.isArrowMoved = true
-            isArrowMoved = false
+            isAllowMoved = false
         }
         
-        if !isArrowMoved {
+        if !isAllowMoved {
             scrollView.contentOffset = CGPoint(x: 0, y: headerHeight - safeAreaInsets.top)
         }
     }
 }
 
-extension MainScrollView {
-    static let mainViewArrowMovedNotification = Notification.Name(rawValue: "mainViewArrowMoved")
+extension MainScrollView: ContentListScrollListener {
+    func contentListDidScroll(_ scrollView: UIScrollView) {
+        if isAllowMoved {
+            scrollView.contentOffset = .zero
+        }
+        
+        if scrollView.contentOffset.y <= 0 {
+            isAllowMoved = true
+        }
+    }
 }
+
+ 
+

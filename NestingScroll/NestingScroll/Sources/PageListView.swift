@@ -7,23 +7,31 @@
 
 import UIKit
 
-class ContentCollectionView: UICollectionView {
+@objc protocol ScrollContainerResponder where Self: UIView {
+    func loadScrollContainerResponder() -> UIScrollView
+}
+
+@objc protocol PageListViewDelegate {
+    @objc optional func pageListViewwWillBeginDragging(_ scrollView: UIScrollView)
+    @objc optional func pageListViewDidScroll(_ scrollView: UIScrollView)
+    @objc optional func pageListViewDidEndDecelerating(_ scrollView: UIScrollView)
+    @objc optional func pageListViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
     
-    var scrollViewWillBeginDraggingHandler: ((UIScrollView) -> Void)?
-    var scrollViewDidEndDeceleratingHandler: ((UIScrollView) -> Void)?
+}
+
+ @objc protocol PageListViewDataSource {
+    func pageListView(_ scrollView: UIScrollView, cellForItemAt index: Int) -> ScrollContainerResponder
+}
+
+class PageListView: UICollectionView {
+    
     var scrollViewDidScrollHandler: ((UIScrollView) -> Void)?
-    var scrollViewWillEndDraggingHandler: ((UIScrollView, CGPoint, UnsafeMutablePointer<CGPoint>) -> Void)?
+    
+    weak var pageDelegate: PageListViewDelegate?
+    weak var pageDataSource: PageListViewDataSource?
     
     var scrollMainScrollViewToSectionTop: (() -> ())?
     var pageCount: Int = 0
-    var isArrowMoved: Bool = false {
-        didSet {
-            let currentIndex: Int = Int(contentOffset.x / width)
-            if let cell = cellForItem(at: IndexPath(item: currentIndex, section: 0)) as? ContentListCell {
-                cell.isArrowMoved = isArrowMoved
-            }
-        }
-    }
     
     init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
@@ -44,27 +52,25 @@ class ContentCollectionView: UICollectionView {
         isPagingEnabled = true
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
-        register(ContentListCell.self, forCellWithReuseIdentifier: "cell")
+        register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         backgroundColor = .white
     }
     
-    public func checkShouldFixedMainContentOffset() {
-//        adjustmentMainScrollViewContentOffset()
-    }
-
 }
 
-extension ContentCollectionView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension PageListView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         pageCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ContentListCell
-        cell.tag = indexPath.item
-        cell.isArrowMoved = isArrowMoved
-        cell.tableView.reloadData()
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        cell.subviews.forEach { $0.removeFromSuperview() }
+        if let view = pageDataSource?.pageListView(self, cellForItemAt: indexPath.item) {
+            view.frame = cell.bounds
+            cell.addSubview(view)
+        }
         return cell
     }
     
@@ -81,11 +87,11 @@ extension ContentCollectionView: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        scrollViewWillBeginDraggingHandler?(scrollView)
+        pageDelegate?.pageListViewwWillBeginDragging?(scrollView)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        scrollViewDidEndDeceleratingHandler?(scrollView)
+        pageDelegate?.pageListViewDidEndDecelerating?(scrollView)
         adjustmentMainScrollViewContentOffset()
     }
     
@@ -94,20 +100,24 @@ extension ContentCollectionView: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        pageDelegate?.pageListViewDidScroll?(scrollView)
         scrollViewDidScrollHandler?(scrollView)
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        scrollViewWillEndDraggingHandler?(scrollView, velocity, targetContentOffset)
+        pageDelegate?.pageListViewWillEndDragging?(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
     }
  
     private func adjustmentMainScrollViewContentOffset() {
         let currentIndex: Int = Int(contentOffset.x / width)
-        if let cell = cellForItem(at: IndexPath(item: currentIndex, section: 0)) as? ContentListCell {
-            let listOffset = cell.tableView.contentOffset
-            if listOffset.y > 0 {
-                scrollMainScrollViewToSectionTop?()
-            }
+        guard let cell = cellForItem(at: IndexPath(item: currentIndex, section: 0)),
+           let responder = cell.subviews.first as? ScrollContainerResponder else {
+               return
+        }
+        
+        let scrollView = responder.loadScrollContainerResponder()
+        if scrollView.contentOffset.y > 0 {
+            scrollMainScrollViewToSectionTop?()
         }
     }
 }

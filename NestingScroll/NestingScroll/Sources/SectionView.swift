@@ -44,7 +44,7 @@ private  let calculateLabel: UILabel = UILabel()
 class SectionView: UICollectionView {
     
     var animator: SectionAnimator? = nil
-    var contentDelegate: SectionViewDelegate?
+    weak var contentDelegate: SectionViewDelegate?
     var selectedIndex: Int = 0
     var lineSelectedIndex: Int = 0
     

@@ -1,17 +1,15 @@
 //
-//  ContentListCell.swift
+//  TestListView.swift
 //  NestingScroll
 //
-//  Created by 蔡志文 on 2021/10/29.
+//  Created by 蔡志文 on 2021/11/3.
 //
 
 import UIKit
 
-class ContentListCell: UICollectionViewCell {
-   
-    private var contentCanScrollToken: NSObjectProtocol? = nil
+class TestListView: UIView {
     
-    var isArrowMoved: Bool = false
+    weak var contentListScrollListener: ContentListScrollListener?
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -30,10 +28,6 @@ class ContentListCell: UICollectionViewCell {
     }
     
     func commonInit() {
-        contentCanScrollToken = NotificationCenter.default.addObserver(forName: ContentListCell.contentViewArrowMovedNotification, object: nil, queue: nil) { [weak self] _ in
-            guard let self = self else { return }
-            self.isArrowMoved = true
-        }
         addSubview(tableView)
     }
     
@@ -42,12 +36,9 @@ class ContentListCell: UICollectionViewCell {
         tableView.frame = bounds
     }
     
-    deinit {
-        contentCanScrollToken = nil
-    }
 }
 
-extension ContentListCell: UITableViewDataSource, UITableViewDelegate {
+extension TestListView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         40
     }
@@ -64,18 +55,13 @@ extension ContentListCell: UITableViewDataSource, UITableViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if !isArrowMoved {
-            scrollView.contentOffset = .zero
-        }
-        
-        if scrollView.contentOffset.y <= 0 {
-            // 通知主视图可以移动了
-            NotificationCenter.default.post(name: MainScrollView.mainViewArrowMovedNotification, object: nil)
-            isArrowMoved = false
-        }
+        contentListScrollListener?.contentListDidScroll(scrollView)
     }
+    
 }
 
-extension ContentListCell {
-    static let contentViewArrowMovedNotification = Notification.Name(rawValue: "contentViewArrowMoved")
+extension TestListView: ScrollContainerResponder {
+    func loadScrollContainerResponder() -> UIScrollView {
+        tableView
+    }
 }

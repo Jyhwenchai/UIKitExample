@@ -29,11 +29,22 @@ class NestingScrollViewController: UIViewController {
         scrollView.backgroundColor = .white
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
-        scrollView.contentDelegate = self
+        scrollView.contentCollectionView.pageDelegate = self
+        scrollView.contentCollectionView.pageDataSource = self
         scrollView.pageCount = sectionView.titles.count
         return scrollView
     }()
     
+    lazy var listViews: [TestListView] = {
+        var views: [TestListView] = []
+        for i in 0..<sectionView.titles.count {
+            let view = TestListView()
+            view.tag = i
+            view.contentListScrollListener = mainScrollView
+            views.append(view)
+        }
+        return views
+    }()
    
 
     override func viewDidLoad() {
@@ -46,31 +57,39 @@ class NestingScrollViewController: UIViewController {
         view.addSubview(mainScrollView)
     }
     
+    deinit {
+        print("deinit: \(self)")
+    }
 
 }
 
-extension NestingScrollViewController: MainScrollViewDelegate {
+extension NestingScrollViewController: PageListViewDelegate {
     
-    func contentScrollViewDidScroll(_ scrollView: UIScrollView) {
-        sectionView.bindContentDidScroll(scrollView.contentOffset)
-    }
-    
-    func contentScrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    func pageListViewwWillBeginDragging(_ scrollView: UIScrollView) {
         sectionView.bindContentWillBeginDraging(scrollView.contentOffset)
     }
     
-    func contentScrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    func pageListViewDidScroll(_ scrollView: UIScrollView) {
+        sectionView.bindContentDidScroll(scrollView.contentOffset)
+    }
+    
+    func pageListViewDidEndDecelerating(_ scrollView: UIScrollView) {
         sectionView.bindContentDidEndScroll(scrollView.contentOffset)
     }
     
-    func contentScrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    func pageListViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         sectionView.bindContentScrollViewWillEndDragging(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
     }
-    
 }
 
 extension NestingScrollViewController: SectionViewDelegate {
     func sectionView(_ sectionView: SectionView, didSelectedIndex index: Int) {
         mainScrollView.scrollToPage(index)
+    }
+}
+
+extension NestingScrollViewController: PageListViewDataSource {
+    func pageListView(_ scrollView: UIScrollView, cellForItemAt index: Int) -> ScrollContainerResponder {
+       listViews[index]
     }
 }
