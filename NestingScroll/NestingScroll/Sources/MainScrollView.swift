@@ -25,8 +25,6 @@ class MainScrollView: UIScrollView {
     
     public var contentDelegate: MainScrollViewDelegate? = nil
     
-    private var lockCurrentContentOffset: Bool = false
-    private var currentContentOffset: CGPoint = .zero
     private var isDisabledDelegateCallback: Bool = false
     
     var headerView: UIView? = nil {
@@ -67,31 +65,23 @@ class MainScrollView: UIScrollView {
         mainViewArrowMovedToken = NotificationCenter.default.addObserver(forName: MainScrollView.mainViewArrowMovedNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self = self else { return }
             self.isArrowMoved = true
+            self.contentCollectionView.isArrowMoved = false
         }
         
         contentCollectionView.scrollViewWillBeginDraggingHandler = { [weak self] scrollView in
             guard let self = self else { return }
-            self.currentContentOffset = self.contentOffset
             self.contentDelegate?.contentScrollViewWillBeginDragging?(scrollView)
         }
         
         contentCollectionView.scrollViewDidEndDeceleratingHandler = { [weak self] scrollView in
             guard let self = self else { return }
-            self.lockCurrentContentOffset = false
-            self.currentContentOffset = .zero
             self.contentDelegate?.contentScrollViewDidEndDecelerating?(scrollView)
         }
         
-        contentCollectionView.scrollMainScrollViewToSectionTop = { [weak self] in
-            guard let self = self else { return }
-            let contentOffset = CGPoint(x: 0, y: self.headerHeight - self.safeAreaInsets.top)
-            self.setContentOffset(contentOffset, animated: true)
-        }
         
         contentCollectionView.scrollViewDidScrollHandler = { [weak self] scrollView in
             guard let self = self else { return }
             guard !self.isDisabledDelegateCallback else { return }
-            self.lockCurrentContentOffset = true
             self.contentDelegate?.contentScrollViewDidScroll?(scrollView)
         }
         
@@ -99,10 +89,17 @@ class MainScrollView: UIScrollView {
             guard let self = self else { return }
             self.contentDelegate?.contentScrollViewWillEndDragging?(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
         }
+        
+        contentCollectionView.scrollMainScrollViewToSectionTop = { [weak self] in
+            guard let self = self else { return }
+            self.scrollSectionToTop()
+        }
+        
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
         var contentY: CGFloat = 0
         if let headerView = headerView {
             headerView.frame = CGRect(x: 0, y: 0, width: width, height: headerHeight)
@@ -121,8 +118,19 @@ class MainScrollView: UIScrollView {
     
     func scrollToPage(_ index: Int) {
         isDisabledDelegateCallback = true
-        contentCollectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: false)
+        contentCollectionView.isArrowMoved = !isArrowMoved
+        contentCollectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: true)
         isDisabledDelegateCallback = false
+    }
+    
+    private func scrollSectionToTop() {
+        let contentOffset = CGPoint(x: 0, y: headerHeight - safeAreaInsets.top)
+        self.isScrollEnabled = false
+        UIView.animate(withDuration: 0.20, delay: 0, options: .curveLinear) {
+            self.setContentOffset(contentOffset, animated: false)
+        } completion: { _ in
+            self.isScrollEnabled = true
+        }
     }
     
 }
@@ -136,14 +144,12 @@ extension MainScrollView: UIGestureRecognizerDelegate {
 extension MainScrollView: UIScrollViewDelegate {
      func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if contentOffset.y >= headerHeight - safeAreaInsets.top {
-            NotificationCenter.default.post(name: ContentListCell.contentViewArrowMovedNotification, object: nil)
+            contentCollectionView.isArrowMoved = true
             isArrowMoved = false
         }
         
         if !isArrowMoved {
             scrollView.contentOffset = CGPoint(x: 0, y: headerHeight - safeAreaInsets.top)
-        } else if lockCurrentContentOffset {
-            scrollView.contentOffset = currentContentOffset
         }
     }
 }

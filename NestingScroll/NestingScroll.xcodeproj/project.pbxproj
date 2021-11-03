@@ -20,6 +20,7 @@
 		66312F8B272B8DAD006CB9FE /* ContentCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8A272B8DAD006CB9FE /* ContentCollectionView.swift */; };
 		66312F8D272B90D9006CB9FE /* ContentListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8C272B90D9006CB9FE /* ContentListCell.swift */; };
 		66312F8F272BD210006CB9FE /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F8E272BD210006CB9FE /* SectionView.swift */; };
+		66312F91273121B5006CB9FE /* SectionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66312F90273121B5006CB9FE /* SectionAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		66312F8A272B8DAD006CB9FE /* ContentCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCollectionView.swift; sourceTree = "<group>"; };
 		66312F8C272B90D9006CB9FE /* ContentListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentListCell.swift; sourceTree = "<group>"; };
 		66312F8E272BD210006CB9FE /* SectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionView.swift; sourceTree = "<group>"; };
+		66312F90273121B5006CB9FE /* SectionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionAnimator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +102,7 @@
 				66312F8A272B8DAD006CB9FE /* ContentCollectionView.swift */,
 				66312F8C272B90D9006CB9FE /* ContentListCell.swift */,
 				66312F8E272BD210006CB9FE /* SectionView.swift */,
+				66312F90273121B5006CB9FE /* SectionAnimator.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -178,6 +181,7 @@
 				66312F8D272B90D9006CB9FE /* ContentListCell.swift in Sources */,
 				66312F6C272A507D006CB9FE /* NestingScrollViewController.swift in Sources */,
 				66312F8F272BD210006CB9FE /* SectionView.swift in Sources */,
+				66312F91273121B5006CB9FE /* SectionAnimator.swift in Sources */,
 				66312F8B272B8DAD006CB9FE /* ContentCollectionView.swift in Sources */,
 				66312F89272B8D96006CB9FE /* MainScrollView.swift in Sources */,
 				66312F80272A5326006CB9FE /* ScreenAppearence.swift in Sources */,

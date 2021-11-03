@@ -16,6 +16,14 @@ class ContentCollectionView: UICollectionView {
     
     var scrollMainScrollViewToSectionTop: (() -> ())?
     var pageCount: Int = 0
+    var isArrowMoved: Bool = false {
+        didSet {
+            let currentIndex: Int = Int(contentOffset.x / width)
+            if let cell = cellForItem(at: IndexPath(item: currentIndex, section: 0)) as? ContentListCell {
+                cell.isArrowMoved = isArrowMoved
+            }
+        }
+    }
     
     init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
@@ -40,6 +48,9 @@ class ContentCollectionView: UICollectionView {
         backgroundColor = .white
     }
     
+    public func checkShouldFixedMainContentOffset() {
+//        adjustmentMainScrollViewContentOffset()
+    }
 
 }
 
@@ -52,6 +63,7 @@ extension ContentCollectionView: UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ContentListCell
         cell.tag = indexPath.item
+        cell.isArrowMoved = isArrowMoved
         cell.tableView.reloadData()
         return cell
     }
@@ -77,6 +89,10 @@ extension ContentCollectionView: UICollectionViewDataSource, UICollectionViewDel
         adjustmentMainScrollViewContentOffset()
     }
     
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+       adjustmentMainScrollViewContentOffset()
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollViewDidScrollHandler?(scrollView)
     }
@@ -85,7 +101,7 @@ extension ContentCollectionView: UICollectionViewDataSource, UICollectionViewDel
         scrollViewWillEndDraggingHandler?(scrollView, velocity, targetContentOffset)
     }
  
-    func adjustmentMainScrollViewContentOffset() {
+    private func adjustmentMainScrollViewContentOffset() {
         let currentIndex: Int = Int(contentOffset.x / width)
         if let cell = cellForItem(at: IndexPath(item: currentIndex, section: 0)) as? ContentListCell {
             let listOffset = cell.tableView.contentOffset

@@ -34,6 +34,7 @@ class TitleCell: UICollectionViewCell {
         textLabel.frame = bounds
     }
     
+    
 }
 
 
@@ -42,6 +43,7 @@ private  let calculateLabel: UILabel = UILabel()
 
 class SectionView: UICollectionView {
     
+    var animator: SectionAnimator? = nil
     var contentDelegate: SectionViewDelegate?
     var selectedIndex: Int = 0
     var lineSelectedIndex: Int = 0
@@ -216,14 +218,21 @@ extension SectionView {
         let targetSize = itemsSize[targetIndex]
         
         let distance = ceil((targetItemX + targetSize.width / 2) - (currentItemX + currentSize.width / 2))
-        let centerOffsetX = abs(diffValue) * distance / (width * CGFloat(offsetItem))
-        let centerX = currentItemX + currentSize.width / 2 + centerOffsetX
        
         if animated {
-            UIView.animate(withDuration: 0.15, delay: 0, options: .curveLinear) {
-                self.lineView.centerX = centerX
+            animator = SectionAnimator()
+            animator?.progressClosure = { [weak self] percent in
+                guard let self = self else { return }
+                self.lineView.centerX = currentItemX + currentSize.width / 2 + distance * percent
             }
+            animator?.completedClosure = { [weak self] in
+                guard let self = self else { return }
+                self.animator = nil
+            }
+            animator?.start()
         } else {
+            let centerOffsetX = abs(diffValue) * distance / (width * CGFloat(offsetItem))
+            let centerX = currentItemX + currentSize.width / 2 + centerOffsetX
             lineView.centerX = centerX
         }
 

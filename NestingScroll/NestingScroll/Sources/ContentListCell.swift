@@ -11,7 +11,7 @@ class ContentListCell: UICollectionViewCell {
    
     private var contentCanScrollToken: NSObjectProtocol? = nil
     
-    private var isArrowMoved: Bool = false
+    var isArrowMoved: Bool = false
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
