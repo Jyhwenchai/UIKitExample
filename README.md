@@ -5,3 +5,6 @@
 
 * **QRCodeScanner**
 二维码扫描与生成
+
+* **NestingScroll**
+上下|左右，嵌套滚动实现
