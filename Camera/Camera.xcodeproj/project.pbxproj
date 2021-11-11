@@ -20,7 +20,6 @@
 		66DE4FC126E738D900D4EA4D /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DE4FC026E738D900D4EA4D /* PhotoCaptureDelegate.swift */; };
 		66DE4FC326E7490F00D4EA4D /* CameraDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DE4FC226E7490F00D4EA4D /* CameraDelegate.swift */; };
 		66DE4FC526E8B4A900D4EA4D /* CameraOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DE4FC426E8B4A900D4EA4D /* CameraOld.swift */; };
-		66DE4FC726E8C19000D4EA4D /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DE4FC626E8C19000D4EA4D /* Test.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +38,6 @@
 		66DE4FC026E738D900D4EA4D /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		66DE4FC226E7490F00D4EA4D /* CameraDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraDelegate.swift; sourceTree = "<group>"; };
 		66DE4FC426E8B4A900D4EA4D /* CameraOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOld.swift; sourceTree = "<group>"; };
-		66DE4FC626E8C19000D4EA4D /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +70,6 @@
 		66DE4F9D26E1EF0200D4EA4D /* Camera */ = {
 			isa = PBXGroup;
 			children = (
-				66DE4FC626E8C19000D4EA4D /* Test.swift */,
 				66DE4F9E26E1EF0200D4EA4D /* AppDelegate.swift */,
 				66DE4FA026E1EF0200D4EA4D /* SceneDelegate.swift */,
 				66DE4FA226E1EF0200D4EA4D /* ViewController.swift */,
@@ -165,7 +162,6 @@
 				66DE4FC126E738D900D4EA4D /* PhotoCaptureDelegate.swift in Sources */,
 				66DE4FA326E1EF0200D4EA4D /* ViewController.swift in Sources */,
 				660D746726EB506100E4219C /* VideoCaptureDelegate.swift in Sources */,
-				66DE4FC726E8C19000D4EA4D /* Test.swift in Sources */,
 				660D746526EB2D5700E4219C /* NewPhotoCaptureDelegate.swift in Sources */,
 				66DE4FC526E8B4A900D4EA4D /* CameraOld.swift in Sources */,
 				66DE4FB526E1F4B900D4EA4D /* Camera.swift in Sources */,
