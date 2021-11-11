@@ -1,47 +1,50 @@
 //
-//  BrowserCell.swift
+//  PreviewImageView.swift
 //  PhotoBrowser
 //
-//  Created by 蔡志文 on 2021/11/8.
+//  Created by 蔡志文 on 2021/11/11.
 //
 
 import UIKit
 
-class PreviewScrollView: UIScrollView {
-    var isSwiped: Bool = false
+class PreviewImageView: UIScrollView {
     
+    var startInteractingClosure: ( () -> Void)?
     
-}
-
-class BrowserCell: UICollectionViewCell {
-    
-    var resourceFrame: CGRect = .zero {
+    private var __resource: ImageResource = .empty {
         didSet {
+            if case let .raw(image) = __resource.type {
+                imageView.image = image
+            }
             imageView.transform = .identity
-            imageView.frame = resourceFrame
-            scrollView.contentSize = resourceFrame.size
+            imageView.frame = __resource.fromFrame
+            contentSize = __resource.fromFrame.size
         }
     }
     
-    private var isZooming: Bool = false
-    private var isActiveInteractive: Bool = false
+    var resource: ImageResource {
+        get {
+            var resource = __resource
+            resource.fromFrame = imageView.frame
+            return resource
+        }
+        set { __resource = newValue }
+    }
+    
+    private(set) var isSwiped: Bool = false
+    private(set) var isInteracting: Bool = false
     
     private var draggingTimes: Int = 0
-    private var isContinuousDragging: Bool = false
-    private var endDraggingTargetOffset: CGPoint = .zero
-    private var willStartAnimateContentOffset: CGPoint = .zero
+    private var isContinuousDragging: Bool { draggingTimes > 1 }
 
+    // Begin dragging when contentOffset.y valu is 0.
+    private var isDraggingContentWhenZeroContentOffset: Bool = true
     
-    lazy var scrollView: PreviewScrollView = {
-        let scrollView = PreviewScrollView()
-        scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.delegate = self
-        scrollView.alwaysBounceVertical = true
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.maximumZoomScale = 4
-        return scrollView
-    }()
+    // Begin dragging contentOffset.
+    private var willBeginDraggingContentOffset: CGPoint = .zero
+    
+    // End Dragging target contentOffset.
+    private var endDraggingTargetOffset: CGPoint = .zero
     
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -52,32 +55,29 @@ class BrowserCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.addSubview(scrollView)
-        scrollView.addSubview(imageView)
+        delegate = self
+        addSubview(imageView)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        scrollView.frame = bounds
+    func endInteractive() {
+        isInteracting = false
     }
     
-    var callback: (() -> Void)?
-    var cancelCallback: (() -> Void)?
-    
-    func unActiveInteractive() {
-        isActiveInteractive = false
-    }
 }
 
-extension BrowserCell: UIScrollViewDelegate {
+
+extension PreviewImageView: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if isActiveInteractive {
-            scrollView.contentOffset = willStartAnimateContentOffset
+        
+        if scrollView.isZooming { return }
+        
+        if isInteracting {
+            scrollView.contentOffset = willBeginDraggingContentOffset
             return
         }
         
@@ -87,26 +87,24 @@ extension BrowserCell: UIScrollViewDelegate {
             return
         }
         
-        if isZooming { return }
-        
         if scrollView.isDecelerating {
             return
         }
-
+        
         if scrollView.contentSize.height > bounds.height && isContinuousDragging {
             return
         }
         
-        if scrollView.contentOffset.y < 0 && !isActiveInteractive {
-            isActiveInteractive = true
-            callback?()
+        if scrollView.contentOffset.y < 0 && !isInteracting && isDraggingContentWhenZeroContentOffset {
+            isInteracting = true
+            startInteractingClosure?()
         }
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         draggingTimes += 1
-        isContinuousDragging = draggingTimes > 1
-        willStartAnimateContentOffset = scrollView.contentOffset
+        willBeginDraggingContentOffset = scrollView.contentOffset
+        isDraggingContentWhenZeroContentOffset = scrollView.contentOffset.y == 0
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -118,7 +116,7 @@ extension BrowserCell: UIScrollViewDelegate {
     
     // if velocity value is .zero, the delegate does not call `scrollViewDidEndDecelerating(_:)` method.
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        self.scrollView.isSwiped = velocity.y != 0
+        self.isSwiped = velocity.y != 0
         endDraggingTargetOffset = targetContentOffset.pointee
     }
     
@@ -131,21 +129,14 @@ extension BrowserCell: UIScrollViewDelegate {
     
     
     //MARK: - Zoom
-    func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
-        isZooming = true
-    }
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        isZooming = true
         centerImage()
     }
     
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        isZooming = false
-    }
     
     func centerImage() {
         var origin = imageView.frame.origin
@@ -156,4 +147,5 @@ extension BrowserCell: UIScrollViewDelegate {
         }
         imageView.frame.origin = origin
     }
+    
 }

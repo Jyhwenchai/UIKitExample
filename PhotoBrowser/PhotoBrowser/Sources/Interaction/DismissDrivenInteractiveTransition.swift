@@ -55,7 +55,7 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
             changeTransitionProgress(transition)
         case .cancelled, .failed, .ended:
             interactionInProgress = false
-            let view: PreviewScrollView = gesture.view as! PreviewScrollView
+            let view: PreviewImageView = gesture.view as! PreviewImageView
             if view.isSwiped && gesture.state == .ended {
                 finishTransitionProgress(transition)
                 return

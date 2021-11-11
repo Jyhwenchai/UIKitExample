@@ -41,6 +41,7 @@ class PresentViewController: UIViewController {
         initView()
         initBarItems()
         initImageData()
+        
     }
     
 

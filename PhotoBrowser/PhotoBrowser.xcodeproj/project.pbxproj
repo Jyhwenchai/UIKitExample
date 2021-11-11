@@ -45,6 +45,9 @@
 		6631302027390619006CB9FE /* PresentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6631301F27390619006CB9FE /* PresentViewController.swift */; };
 		6631302227390EBE006CB9FE /* DismissDrivenInteractiveTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6631302127390EBE006CB9FE /* DismissDrivenInteractiveTransition.swift */; };
 		66EEC12F273B535E00551B5B /* TransitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EEC12E273B535E00551B5B /* TransitionData.swift */; };
+		66EEC132273CF44F00551B5B /* PreviewImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EEC131273CF44F00551B5B /* PreviewImageView.swift */; };
+		66EEC135273CFF4C00551B5B /* ResourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EEC134273CFF4C00551B5B /* ResourceProtocol.swift */; };
+		66EEC137273CFFB000551B5B /* ImageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EEC136273CFFB000551B5B /* ImageResource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +110,9 @@
 		6631301F27390619006CB9FE /* PresentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentViewController.swift; sourceTree = "<group>"; };
 		6631302127390EBE006CB9FE /* DismissDrivenInteractiveTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissDrivenInteractiveTransition.swift; sourceTree = "<group>"; };
 		66EEC12E273B535E00551B5B /* TransitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionData.swift; sourceTree = "<group>"; };
+		66EEC131273CF44F00551B5B /* PreviewImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewImageView.swift; sourceTree = "<group>"; };
+		66EEC134273CFF4C00551B5B /* ResourceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceProtocol.swift; sourceTree = "<group>"; };
+		66EEC136273CFFB000551B5B /* ImageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,7 +174,6 @@
 				66312FFC2733C7A9006CB9FE /* SinglePhotoBrowserViewController.swift */,
 				66312FFE2733C98B006CB9FE /* SinglePhotoBrowserAnimateViewController.swift */,
 				6631300D2738F667006CB9FE /* MutiplePhotoBrowserAnimateViewController.swift */,
-				6631300F2738F80A006CB9FE /* BrowserCell.swift */,
 			);
 			path = PhotoBrowser;
 			sourceTree = "<group>";
@@ -261,6 +266,8 @@
 		6631301627390497006CB9FE /* present */ = {
 			isa = PBXGroup;
 			children = (
+				66EEC133273CFF3C00551B5B /* Model */,
+				66EEC130273CF41300551B5B /* Cells */,
 				66313017273904E1006CB9FE /* PhotoBrowserPresentTransitioning.swift */,
 				6631301927390508006CB9FE /* PhotoBrowserPresentAnimator.swift */,
 				6631301D27390585006CB9FE /* PhotoBrowserDismissTransitioning.swift */,
@@ -268,6 +275,24 @@
 				66EEC12E273B535E00551B5B /* TransitionData.swift */,
 			);
 			path = present;
+			sourceTree = "<group>";
+		};
+		66EEC130273CF41300551B5B /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				66EEC131273CF44F00551B5B /* PreviewImageView.swift */,
+				6631300F2738F80A006CB9FE /* BrowserCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		66EEC133273CFF3C00551B5B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				66EEC134273CFF4C00551B5B /* ResourceProtocol.swift */,
+				66EEC136273CFFB000551B5B /* ImageResource.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -411,10 +436,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6631302227390EBE006CB9FE /* DismissDrivenInteractiveTransition.swift in Sources */,
+				66EEC132273CF44F00551B5B /* PreviewImageView.swift in Sources */,
 				6631301A27390508006CB9FE /* PhotoBrowserPresentAnimator.swift in Sources */,
 				663130122738FC15006CB9FE /* PhotoBrowserPushTransitioning.swift in Sources */,
 				66EEC12F273B535E00551B5B /* TransitionData.swift in Sources */,
 				6631300C27350ABB006CB9FE /* SwipeInteractionTransition.swift in Sources */,
+				66EEC135273CFF4C00551B5B /* ResourceProtocol.swift in Sources */,
+				66EEC137273CFFB000551B5B /* ImageResource.swift in Sources */,
 				6631301C2739053E006CB9FE /* PhotoBrowserDismissAnimator.swift in Sources */,
 				66312FB22733B724006CB9FE /* ViewController.swift in Sources */,
 				663130042733D25B006CB9FE /* PhotoBrowserTransitioning.swift in Sources */,

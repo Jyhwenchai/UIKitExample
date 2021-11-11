@@ -16,10 +16,14 @@ class MutiplePhotoBrowserAnimateViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = view.bounds.size
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)   // fix last item contentOffset error.
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        // below four line code set then spacing between items to 20
+        layout.minimumLineSpacing = 20
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)   // fix last item contentOffset error.
+        var frame = view.bounds
+        frame.size.width += 20
+        let collectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.setCollectionViewLayout(layout, animated: false)
@@ -61,21 +65,13 @@ class MutiplePhotoBrowserAnimateViewController: UIViewController {
         transitioningDelegate = dismissTransitioning
     }
     
-//    private lazy var swipeGesture: UISwipeGestureRecognizer = {
-//        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeAction(_:)))
-//        swipeGesture.direction = .down
-//        return swipeGesture
-//    }()
     func initView() {
         previewInfo.toFrame = previewInfo.fromFrame
         previewInfo.fromFrame = convertImageFrameToPreviewFrame(previewInfo.selectedResource)
         dismissTransitioning.interactiveController = self
         
         view.backgroundColor = .black
-        var frame = view.bounds
-        frame.size.width += 10  // item spacing
-        collectionView.frame = frame
-        collectionView.backgroundColor = .clear
+       
         view.addSubview(collectionView)
         
         backButton.frame = CGRect(x: 16, y: 40, width: 44, height: 44)
@@ -133,9 +129,6 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! BrowserCell
-        let resources = previewInfo.resources
-        cell.imageView.image = resources[indexPath.item]
-        cell.resourceFrame = convertImageFrameToPreviewFrame(resources[indexPath.item])
         return cell
     }
     
@@ -145,16 +138,14 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let cell = cell as! BrowserCell
-        cell.resourceFrame = convertImageFrameToPreviewFrame(previewInfo.resources[indexPath.item])
-        cell.callback = { [weak self] in
+        let resources = previewInfo.resources
+        let fromFrame = convertImageFrameToPreviewFrame(resources[indexPath.item])
+        cell.resource = ImageResource(type: .raw(resources[indexPath.item]), fromFrame: fromFrame, toFrame: previewInfo.toFrame)
+        cell.startInteractingClosure = { [weak self] in
             guard let self = self else { return }
             guard let data = self.createTransitionData() else { return }
             self.dismissTransitioning.transitionData = data
             self.dismissTransitioning.interactiveTransition.registerPanGesture(cell.scrollView.panGestureRecognizer)
-        }
-        cell.cancelCallback = { [weak self] in
-            guard let self = self else { return }
-            self.dismissTransitioning.interactiveTransition.unregisterPanGesture()
         }
     }
     
@@ -165,7 +156,7 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
     
     private func createTransitionData() -> TransitionData? {
         guard let cell = collectionView.cellForItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0)) as? BrowserCell else { return nil }
-        var fromFrame = cell.imageView.frame
+        var fromFrame = cell.resource.fromFrame
         fromFrame.origin.x = -cell.scrollView.contentOffset.x
         if fromFrame.height > UIScreen.main.bounds.height {
             fromFrame.origin.y = -cell.scrollView.contentOffset.y
@@ -177,7 +168,7 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
     
     private func unActiveInteractiveCell() {
         guard let cell = collectionView.cellForItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0)) as? BrowserCell else { return }
-        cell.unActiveInteractive()
+        cell.endInteractive()
     }
 
 }
