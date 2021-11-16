@@ -18,7 +18,7 @@ class PhotoBrowserPresentTransitioning: NSObject, UIViewControllerTransitioningD
         pushAnimator.previewInfo = self.previewInfo
     }
     
-    private lazy var pushAnimator = PhotoBrowserPushAnimator()
+    private lazy var pushAnimator = PhotoBrowserPresentAnimator()
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         pushAnimator

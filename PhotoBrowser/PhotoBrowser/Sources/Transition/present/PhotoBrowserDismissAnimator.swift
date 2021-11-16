@@ -11,17 +11,12 @@ class PhotoBrowserDismissAnimator: NSObject, UIViewControllerAnimatedTransitioni
     
     var transitionData: TransitionData!
     
-//    init(transitionData: TransitionData) {
-//        self.transitionData = transitionData
-//    }
-    
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.25
+        0.2
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let containerView = transitionContext.containerView
-        let fromView = transitionContext.view(forKey: .from)!
         let toView = transitionContext.view(forKey: .to)!
         
         containerView.addSubview(toView)
@@ -51,15 +46,11 @@ class PhotoBrowserDismissAnimator: NSObject, UIViewControllerAnimatedTransitioni
             placeholderView.removeFromSuperview()
             dimmingView.removeFromSuperview()
             if transitionContext.transitionWasCancelled {
-                fromView.addSubview(animateView)
                 toView.removeFromSuperview()
             }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
 
-    }
-    
-    func animationEnded(_ transitionCompleted: Bool) {
     }
     
 }

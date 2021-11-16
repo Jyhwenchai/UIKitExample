@@ -36,7 +36,7 @@ class PhotoBrowserPopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         dimmingView.alpha = 1
         containerView.addSubview(dimmingView)
         
-        let animateView = fromVC.imageView.snapshotView()!
+        let animateView = fromVC.view.snapshotView()!
         animateView.frame = previewInfo.fromFrame
         containerView.addSubview(animateView)
        

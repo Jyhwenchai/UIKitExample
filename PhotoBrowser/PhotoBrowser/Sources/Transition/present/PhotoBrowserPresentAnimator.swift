@@ -12,7 +12,7 @@ class PhotoBrowserPresentAnimator: NSObject , UIViewControllerAnimatedTransition
     var previewInfo: ResourcePreviewInfo! = nil
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.25
+        0.2
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -42,7 +42,7 @@ class PhotoBrowserPresentAnimator: NSObject , UIViewControllerAnimatedTransition
         
         /// execute animation
         let duration = transitionDuration(using: transitionContext)
-        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseIn) {
+        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseOut) {
             dimmingView.alpha = 1
             transitionImageView.frame = self.previewInfo.toFrame
         } completion: { _ in

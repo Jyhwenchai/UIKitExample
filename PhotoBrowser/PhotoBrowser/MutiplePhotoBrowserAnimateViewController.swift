@@ -35,14 +35,6 @@ class MutiplePhotoBrowserAnimateViewController: UIViewController {
         return collectionView
     }()
     
-    lazy var imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.masksToBounds = true
-        return imageView
-    }()
-    
-    let backButton = UIButton()
     
     init(previewInfo: ResourcePreviewInfo) {
         self.previewInfo = previewInfo
@@ -71,15 +63,7 @@ class MutiplePhotoBrowserAnimateViewController: UIViewController {
         dismissTransitioning.interactiveController = self
         
         view.backgroundColor = .black
-       
         view.addSubview(collectionView)
-        
-        backButton.frame = CGRect(x: 16, y: 40, width: 44, height: 44)
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
-        backButton.setImage(UIImage(systemName: "chevron.backward.circle", withConfiguration: config), for: .normal)
-        backButton.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-        backButton.tintColor = .white
-        view.addSubview(backButton)
         
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
@@ -94,26 +78,8 @@ class MutiplePhotoBrowserAnimateViewController: UIViewController {
         }
     }
     
-    @objc func backAction() {
-        guard let transitionData = createTransitionData() else { return }
-        dismissTransitioning.transitionData = transitionData
-        dismiss(animated: true, completion: nil)
-    }
-    
     deinit {
         print("deinit: \(self)")
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        backButton.isHidden = true
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        backButton.isHidden = false
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        backButton.isHidden = false
     }
     
 }
@@ -146,21 +112,27 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
             guard let data = self.createTransitionData() else { return }
             self.dismissTransitioning.transitionData = data
             self.dismissTransitioning.interactiveTransition.registerPanGesture(cell.scrollView.panGestureRecognizer)
+            self.dismissTransitioning.interactiveTransition.startDismissTransition()
+        }
+        
+        cell.dismissClosure = { [weak self] in
+            guard let self = self else { return }
+            guard let transitionData = self.createTransitionData() else { return }
+            self.dismissTransitioning.transitionData = transitionData
+            self.dismiss(animated: true, completion: nil)
         }
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let selectedIndex = scrollView.contentOffset.x / view.bounds.width
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let selectedIndex = targetContentOffset.pointee.x / scrollView.bounds.width
         previewInfo.selectedIndex = Int(selectedIndex)
     }
     
     private func createTransitionData() -> TransitionData? {
-        guard let cell = collectionView.cellForItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0)) as? BrowserCell else { return nil }
-        var fromFrame = cell.resource.fromFrame
-        fromFrame.origin.x = -cell.scrollView.contentOffset.x
-        if fromFrame.height > UIScreen.main.bounds.height {
-            fromFrame.origin.y = -cell.scrollView.contentOffset.y
+        guard let cell = collectionView.cellForItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0)) as? BrowserCell else {
+            return nil
         }
+        let fromFrame = cell.resource.fromFrame
         let toFrame = previewInfo.toFrame
         let transitionData = TransitionData(resource: previewInfo.selectedResource, fromFrame: fromFrame, toFrame: toFrame)
         return transitionData
@@ -172,4 +144,3 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
     }
 
 }
-

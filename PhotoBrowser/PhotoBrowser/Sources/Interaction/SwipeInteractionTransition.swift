@@ -88,7 +88,7 @@ class SwipeInteractionTransition: UIPercentDrivenInteractiveTransition {
         self.dimmingView = dimmingView
         
         // placeholder imageView
-        guard let animateView = fromVC.imageView.snapshotView() else { return }
+        guard let animateView = fromVC.view.snapshotView() else { return }
         animateView.frame = previewInfo.fromFrame
         containerView.addSubview(animateView)
         self.animateView = animateView

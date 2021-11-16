@@ -14,9 +14,16 @@ class BrowserCell: UICollectionViewCell {
         set { scrollView.resource = newValue }
     }
     
-    var startInteractingClosure: (() -> Void)? {
+    var startInteractingClosure: (() -> Void)?
+    {
         get { scrollView.startInteractingClosure }
         set { scrollView.startInteractingClosure = newValue }
+    }
+    
+    var dismissClosure: (() -> Void)?
+    {
+        get { scrollView.dismissClosure }
+        set { scrollView.dismissClosure = newValue }
     }
     
     lazy var scrollView: PreviewImageView = {
@@ -32,6 +39,10 @@ class BrowserCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(scrollView)
+        scrollView.startInteractingClosure = { [weak self] in
+            guard let self = self else { return }
+            self.startInteractingClosure?()
+        }
     }
     
     required init?(coder: NSCoder) {

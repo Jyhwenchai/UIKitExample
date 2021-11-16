@@ -9,7 +9,8 @@ import UIKit
 
 class PreviewImageView: UIScrollView {
     
-    var startInteractingClosure: ( () -> Void)?
+    var startInteractingClosure: ( () -> Void )?
+    var dismissClosure: ( () -> Void)?
     
     private var __resource: ImageResource = .empty {
         didSet {
@@ -25,13 +26,33 @@ class PreviewImageView: UIScrollView {
     var resource: ImageResource {
         get {
             var resource = __resource
-            resource.fromFrame = imageView.frame
+            var fromFrame = imageView.frame
+            if isInteracting {
+                fromFrame.origin.x = -willBeginDraggingContentOffset.x
+                if zoomScale > 0 {
+                    if fromFrame.height >= bounds.height {
+                        // image height >= screen height
+                        fromFrame.origin.y = -willBeginDraggingContentOffset.y
+                    } else {
+                        // image height < screen height
+                        fromFrame.origin.y = (bounds.height - fromFrame.height) / 2 - willBeginDraggingContentOffset.y
+                    }
+                }
+            } else {
+                // single tap to dismisss
+                if fromFrame.height > bounds.height {
+                    fromFrame.origin = CGPoint(x: -contentOffset.x, y: -contentOffset.y)
+                }
+            }
+            
+            resource.fromFrame = fromFrame
             return resource
         }
         set { __resource = newValue }
     }
     
-    private(set) var isSwiped: Bool = false
+    private var shouldFailedGesture: Bool = false
+    private(set) var isSwipedDown: Bool = false
     private(set) var isInteracting: Bool = false
     
     private var draggingTimes: Int = 0
@@ -57,6 +78,7 @@ class PreviewImageView: UIScrollView {
         super.init(frame: frame)
         delegate = self
         addSubview(imageView)
+        initGestures()
     }
     
     required init?(coder: NSCoder) {
@@ -67,6 +89,70 @@ class PreviewImageView: UIScrollView {
         isInteracting = false
     }
     
+    func initGestures() {
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(singleTapAction(_:)))
+        addGestureRecognizer(singleTapGesture)
+        
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTapAction(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        addGestureRecognizer(doubleTapGesture)
+        
+        panGestureRecognizer.require(toFail: doubleTapGesture)
+        singleTapGesture.require(toFail: doubleTapGesture)
+    }
+    
+    @objc func singleTapAction(_ sender: UITapGestureRecognizer) {
+        dismissClosure?()
+    }
+    
+    @objc func doubleTapAction(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: self)
+        let relativeImageLocation = sender.location(in: imageView)
+        scaleImage(at: location, relativeImageLocation: relativeImageLocation)
+    }
+    
+    var isContentZooming: Bool = false
+    func scaleImage(at point: CGPoint, relativeImageLocation location: CGPoint) {
+        
+        isContentZooming = true
+        
+        let newScale = zoomScale > 1 ? 1 : 2.0
+        let viewSize = bounds.size
+        var scaleOrigin = point
+        let scaleSize = CGSize(width: 100, height: 100)
+        // define the boundary of the zomm rect
+        let top = location.y - 100
+        let bottom = location.y + 100
+        let left = location.x - 100
+        let right = location.x + 100
+        
+        if top < 0 {
+            scaleOrigin.y = 0
+        } else if bottom > viewSize.height {
+            scaleOrigin.y = viewSize.height
+        } else {
+            scaleOrigin.y -= scaleSize.height / 2
+        }
+        
+        if left < 0 {
+            scaleOrigin.x = 0
+        } else if right > viewSize.width {
+            scaleOrigin.x = viewSize.width
+        } else {
+            scaleOrigin.x -= scaleSize.width / 2
+        }
+        
+        let rect = CGRect(origin: scaleOrigin, size: scaleSize)
+        
+        if newScale > 1 {
+            maximumZoomScale = 2
+            self.zoom(to: rect, animated: true)
+        } else {
+            maximumZoomScale = 4
+            setZoomScale(1, animated: true)
+        }
+    }
+    
 }
 
 
@@ -74,7 +160,7 @@ extension PreviewImageView: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        if scrollView.isZooming { return }
+        if isContentZooming { return }
         
         if isInteracting {
             scrollView.contentOffset = willBeginDraggingContentOffset
@@ -94,9 +180,17 @@ extension PreviewImageView: UIScrollViewDelegate {
         if scrollView.contentSize.height > bounds.height && isContinuousDragging {
             return
         }
-        
-        if scrollView.contentOffset.y < 0 && !isInteracting && isDraggingContentWhenZeroContentOffset {
+       
+        let transitionOffsetY: CGFloat = zoomScale > 1 ? -40.0 : 0
+        let isScaleLargeImage =  zoomScale > 1
+        if scrollView.contentOffset.y < transitionOffsetY
+            && !isInteracting
+            && isDraggingContentWhenZeroContentOffset {
             isInteracting = true
+            if isScaleLargeImage {
+                willBeginDraggingContentOffset = scrollView.contentOffset
+            }
+//            print("start transition")
             startInteractingClosure?()
         }
     }
@@ -116,7 +210,7 @@ extension PreviewImageView: UIScrollViewDelegate {
     
     // if velocity value is .zero, the delegate does not call `scrollViewDidEndDecelerating(_:)` method.
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        self.isSwiped = velocity.y != 0
+        isSwipedDown = abs(velocity.y) > 1.0 && abs(velocity.x) < 1.0
         endDraggingTargetOffset = targetContentOffset.pointee
     }
     
@@ -137,8 +231,16 @@ extension PreviewImageView: UIScrollViewDelegate {
         centerImage()
     }
     
+    func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+        isContentZooming = true
+    }
     
-    func centerImage() {
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        isContentZooming = false
+    }
+    
+    
+    private func centerImage() {
         var origin = imageView.frame.origin
         let size = imageView.frame.size
         origin.y = (bounds.height - size.height) / 2
@@ -149,3 +251,4 @@ extension PreviewImageView: UIScrollViewDelegate {
     }
     
 }
+

@@ -8,12 +8,7 @@
 import UIKit
 
 class PhotoBrowserDismissTransitioning: NSObject, UIViewControllerTransitioningDelegate {
-    
-//    var selectedIndex: Int {
-//        didSet {
-//            dismissAnimator.previewInfo.selectedIndex = selectedIndex
-//        }
-//    }
+
     var transitionData: TransitionData? {
         get { nil }
         set {
@@ -29,13 +24,6 @@ class PhotoBrowserDismissTransitioning: NSObject, UIViewControllerTransitioningD
     
     let interactiveTransition = DismissDrivenInteractiveTransition()
     private lazy var dismissAnimator = PhotoBrowserDismissAnimator()
-    
-//    init(controller: UIViewController) {
-//        self.transitionData = transitionData
-//        self.interactiveTransition = DismissDrivenInteractiveTransition(previewInfo: previewInfo, interactiveController: controller)
-//        super.init()
-//        dismissAnimator.previewInfo = previewInfo
-//    }
     
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {

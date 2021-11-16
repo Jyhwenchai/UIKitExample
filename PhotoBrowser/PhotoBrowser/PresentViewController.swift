@@ -74,22 +74,6 @@ class PresentViewController: UIViewController {
         }
     }
     
-    @objc func previewAction() {
-//        if selectedResourcesInfo.count == 0 { return }
-//        let indexPath = selectedResourcesInfo.first!.indexPath
-//        guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell else { return }
-//        updateTransitioningConfigure(with: cell, at: indexPath)
-//
-//        let controller = PhotoBrowseViewController()
-//        controller.dataSource = selectedResourcesInfo
-//        controller.updateTransitionImageClosure = { index in
-//            let indexPath = IndexPath(item: index, section: 0)
-//            guard let cell = self.collectionView.cellForItem(at: indexPath) as? ImageCell else { return }
-//            self.updateTransitioningConfigure(with: cell, at: indexPath)
-//        }
-//        navigationController?.delegate = navigationTransitioning
-//        navigationController?.pushViewController(controller, animated: true)
-    }
 }
 
 extension PresentViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -108,7 +92,6 @@ extension PresentViewController: UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! ImageCell
         let fromFrame = cell.contentView.convert(cell.imageView.frame, to: view)
-//        let image = dataSource[indexPath.item]
         let previewInfo = ResourcePreviewInfo(resources: dataSource, selectedIndex: indexPath.item, fromFrame: fromFrame)
         
         let navigationTransitioning = PhotoBrowserPresentTransitioning(previewInfo: previewInfo)

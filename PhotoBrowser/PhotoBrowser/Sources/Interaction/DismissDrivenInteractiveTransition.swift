@@ -11,8 +11,8 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
     
     private(set) var interactionInProgress: Bool = false
     private weak var transitionContext: UIViewControllerContextTransitioning?
-    private(set) var transitionOffset: CGPoint = .zero
-    private var panGesture: UIPanGestureRecognizer?
+    private weak var panGesture: UIPanGestureRecognizer?
+    private var transitionDeviationOffset: CGPoint = .zero
     
     var transitionData: TransitionData!
     weak var interactiveController: UIViewController! 
@@ -28,47 +28,68 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
     }
     
     func registerPanGesture(_ gesture: UIPanGestureRecognizer) {
-        if let _ = panGesture { return }
+        unregisterPanGesture()
         gesture.addTarget(self, action: #selector(panGestureAction(gesture:)))
         panGesture = gesture
-        interactionInProgress = true
-        interactiveController.dismiss(animated: true, completion: nil)
     }
     
-    func unregisterPanGesture() {
+    private func unregisterPanGesture() {
         if let panGesture = panGesture {
             panGesture.removeTarget(self, action: #selector(panGestureAction(gesture:)))
             self.panGesture = nil
         }
     }
     
+    func startDismissTransition() {
+        transitionDeviationOffset = .zero
+        interactionInProgress = true
+        interactiveController.dismiss(animated: true, completion: nil)
+    }
+    
     @objc func panGestureAction(gesture: UIPanGestureRecognizer) {
-        let transition = gesture.translation(in: gesture.view)
-        transitionOffset = transition
-        let screenHeight = UIScreen.main.bounds.height
-        let scale = abs(transition.y) / screenHeight
+        
+        guard interactionInProgress else { return }
+        
+        let (translation, scale) = calculateTranslationAndScale(from: gesture)
         switch gesture.state {
         case .possible: break
         case .began: break
         case .changed:
+            if transitionData.fromFrame.width > UIScreen.main.bounds.width,
+               transitionDeviationOffset == .zero {
+                transitionDeviationOffset = translation
+                let (translation, scale) = calculateTranslationAndScale(from: gesture)
+                update(scale)
+                changeTransitionProgress(translation)
+                break
+            }
+     
             update(scale)
-            changeTransitionProgress(transition)
+            changeTransitionProgress(translation)
         case .cancelled, .failed, .ended:
             interactionInProgress = false
             let view: PreviewImageView = gesture.view as! PreviewImageView
-            if view.isSwiped && gesture.state == .ended {
-                finishTransitionProgress(transition)
+            if view.isSwipedDown && gesture.state == .ended {
+                finishTransitionProgress(translation)
                 return
             }
             
             if scale > 0.5 && gesture.state == .ended {
-                finishTransitionProgress(transition)
+                finishTransitionProgress(translation)
             } else {
-                cancelTransitionProgress(transition)
+                cancelTransitionProgress(translation)
             }
             
         default: break
         }
+    }
+    
+    private func calculateTranslationAndScale(from gesture: UIPanGestureRecognizer) -> (CGPoint, CGFloat) {
+        var translation = gesture.translation(in: gesture.view)
+        translation = CGPoint(x: translation.x - transitionDeviationOffset.x, y: translation.y - transitionDeviationOffset.y)
+        let screenHeight = UIScreen.main.bounds.height
+        let scale = abs(translation.y) / screenHeight
+        return (translation, scale)
     }
     
     func prepareBeginTransitionProgress() {
@@ -146,11 +167,11 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
             placeholderView.removeFromSuperview()
             let cancel = self.transitionContext!.transitionWasCancelled
             self.transitionContext?.completeTransition(!cancel)
+            self.unregisterPanGesture()
         }
     }
     
     func cancelTransitionProgress(_ translation: CGPoint) {
-        unregisterPanGesture()
         guard let toView = transitionContext?.view(forKey: .to) else { return }
         
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
@@ -171,7 +192,7 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
 }
 
 
-private extension UIView {
+extension UIView {
     func setAnchorPoint(_ point: CGPoint) {
         var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
         var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
