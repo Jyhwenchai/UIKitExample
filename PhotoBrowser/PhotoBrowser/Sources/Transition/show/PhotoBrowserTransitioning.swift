@@ -7,42 +7,21 @@
 
 import UIKit
 
-class PhotoBrowserTransitioning: NSObject, UINavigationControllerDelegate {
+class PhotoBrowserShowTransitioning: NSObject, UINavigationControllerDelegate {
     
-    let previewInfo: ResourcePreviewInfo
-    var drivenInteraction: SwipeInteractionTransition?
+    private var previewInfo: ResourcePreviewInfo
     
     init(previewInfo: ResourcePreviewInfo) {
         self.previewInfo = previewInfo
         super.init()
-        pushAnimator.previewInfo = previewInfo
-        var popPreviewInfo = previewInfo
-        let fromFrame = popPreviewInfo.toFrame
-        popPreviewInfo.toFrame = popPreviewInfo.fromFrame
-        popPreviewInfo.fromFrame = fromFrame
-        popAnimator.previewInfo = popPreviewInfo
+        self.previewInfo.toFrame = convertImageFrameToPreviewFrame(previewInfo.selectedResource)
+        pushAnimator.previewInfo = self.previewInfo
     }
     
-    private lazy var pushAnimator = PhotoBrowserPushAnimator()
-    private lazy var popAnimator = PhotoBrowserPopAnimator()
-
-    private var isPush: Bool = false
+    private lazy var pushAnimator = PhotoBrowserPresentAnimator()
     
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if operation == .push {
-            isPush = true
-            return pushAnimator
-        } else {
-            isPush = false
-            return popAnimator
-        }
+        pushAnimator
     }
     
-    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard let interaction = drivenInteraction,
-              interaction.interactionInProgress
-        else { return nil }
-        
-        return interaction
-    }
 }

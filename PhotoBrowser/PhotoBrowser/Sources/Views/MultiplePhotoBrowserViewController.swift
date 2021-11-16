@@ -7,10 +7,13 @@
 
 import UIKit
 
-class MutiplePhotoBrowserAnimateViewController: UIViewController {
+class MultiplePhotoBrowserViewController: UIViewController {
 
     private var dismissTransitioning: PhotoBrowserDismissTransitioning = PhotoBrowserDismissTransitioning()
     private var previewInfo: ResourcePreviewInfo
+    private var followIndex: Bool = true
+    
+    var delegate: MultiplePhotoBrowserDelegate?
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -84,7 +87,7 @@ class MutiplePhotoBrowserAnimateViewController: UIViewController {
     
 }
 
-extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension MultiplePhotoBrowserViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         1
     }
@@ -133,7 +136,7 @@ extension MutiplePhotoBrowserAnimateViewController: UICollectionViewDataSource, 
             return nil
         }
         let fromFrame = cell.resource.fromFrame
-        let toFrame = previewInfo.toFrame
+        let toFrame: CGRect = delegate?.mutiplePhotoBrowserViewController(self, williDsmissToFrame: previewInfo.selectedIndex) ?? previewInfo.toFrame
         let transitionData = TransitionData(resource: previewInfo.selectedResource, fromFrame: fromFrame, toFrame: toFrame)
         return transitionData
     }

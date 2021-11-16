@@ -146,8 +146,8 @@ class PreviewImageView: UIScrollView {
         if newScale > 1 {
             maximumZoomScale = 2
             zoom(to: rect, animated: true)
-        } else {
             maximumZoomScale = 4
+        } else {
             setZoomScale(1, animated: true)
         }
     }
@@ -189,7 +189,6 @@ extension PreviewImageView: UIScrollViewDelegate {
             if isScaleLargeImage {
                 willBeginDraggingContentOffset = scrollView.contentOffset
             }
-//            print("start transition")
             startInteractingClosure?()
         }
     }
