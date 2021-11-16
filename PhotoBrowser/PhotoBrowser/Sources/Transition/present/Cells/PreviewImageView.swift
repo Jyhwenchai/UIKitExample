@@ -51,7 +51,6 @@ class PreviewImageView: UIScrollView {
         set { __resource = newValue }
     }
     
-    private var shouldFailedGesture: Bool = false
     private(set) var isSwipedDown: Bool = false
     private(set) var isInteracting: Bool = false
     
@@ -146,7 +145,7 @@ class PreviewImageView: UIScrollView {
         
         if newScale > 1 {
             maximumZoomScale = 2
-            self.zoom(to: rect, animated: true)
+            zoom(to: rect, animated: true)
         } else {
             maximumZoomScale = 4
             setZoomScale(1, animated: true)
