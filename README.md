@@ -8,3 +8,6 @@
 
 * **NestingScroll**
 上下|左右，嵌套滚动实现
+
+* **PhotoBrowser**
+图片浏览器
