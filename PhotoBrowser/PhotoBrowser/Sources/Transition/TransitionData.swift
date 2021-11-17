@@ -11,10 +11,4 @@ struct TransitionData {
     var resource: UIImage
     var fromFrame: CGRect
     var toFrame: CGRect
-    
-//    init(resource: UIImage, fromFrame: CGRect = .zero, toFrame: CGRect = .zero) {
-//        self.resource = resource
-//        self.fromFrame = fromFrame
-//        self.toFrame = toFrame
-//    }
 }

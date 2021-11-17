@@ -82,7 +82,7 @@ class MultiplePhotoBrowserViewController: UIViewController {
     }
     
     deinit {
-        print("deinit: \(self)")
+//        print("deinit: \(self)")
     }
     
 }

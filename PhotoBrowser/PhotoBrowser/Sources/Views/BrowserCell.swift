@@ -29,7 +29,6 @@ class BrowserCell: UICollectionViewCell {
     lazy var scrollView: PreviewImageView = {
         let scrollView = PreviewImageView()
         scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.alwaysBounceVertical = true
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.maximumZoomScale = 4

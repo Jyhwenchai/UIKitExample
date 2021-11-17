@@ -90,7 +90,8 @@ extension PresentViewController: UICollectionViewDataSource, UICollectionViewDel
         let fromFrame = cell.contentView.convert(cell.imageView.frame, to: view)
         let previewInfo = ResourcePreviewInfo(resources: dataSource, selectedIndex: indexPath.item, fromFrame: fromFrame)
         
-        let navigationTransitioning = PhotoBrowserPresentTransitioning(previewInfo: previewInfo)
+        let transitionData = TransitionData(resource: previewInfo.selectedResource, fromFrame: fromFrame, toFrame: .zero)
+        let navigationTransitioning = PhotoBrowserPresentTransitioning(transitionData: transitionData)
         let controller = MultiplePhotoBrowserViewController(previewInfo: previewInfo)
         controller.delegate = self
         controller.modalPresentationStyle = .fullScreen

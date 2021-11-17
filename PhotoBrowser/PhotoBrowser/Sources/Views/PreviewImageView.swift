@@ -53,6 +53,7 @@ class PreviewImageView: UIScrollView {
     
     private(set) var isSwipedDown: Bool = false
     private(set) var isInteracting: Bool = false
+    private var isContentZooming: Bool = false
     
     private var draggingTimes: Int = 0
     private var isContinuousDragging: Bool { draggingTimes > 1 }
@@ -98,6 +99,8 @@ class PreviewImageView: UIScrollView {
         
         panGestureRecognizer.require(toFail: doubleTapGesture)
         singleTapGesture.require(toFail: doubleTapGesture)
+        
+        alwaysBounceVertical = true
     }
     
     @objc func singleTapAction(_ sender: UITapGestureRecognizer) {
@@ -110,7 +113,6 @@ class PreviewImageView: UIScrollView {
         scaleImage(at: location, relativeImageLocation: relativeImageLocation)
     }
     
-    var isContentZooming: Bool = false
     func scaleImage(at point: CGPoint, relativeImageLocation location: CGPoint) {
         
         isContentZooming = true
@@ -249,4 +251,3 @@ extension PreviewImageView: UIScrollViewDelegate {
     }
     
 }
-

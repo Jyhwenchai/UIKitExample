@@ -9,18 +9,18 @@ import UIKit
 
 class PhotoBrowserPresentTransitioning: NSObject, UIViewControllerTransitioningDelegate {
     
-    private var previewInfo: ResourcePreviewInfo
+    private var transitionData: TransitionData
     
-    init(previewInfo: ResourcePreviewInfo) {
-        self.previewInfo = previewInfo
+    init(transitionData: TransitionData) {
+        self.transitionData = transitionData
+        self.transitionData.toFrame = convertImageFrameToPreviewFrame(transitionData.resource)
         super.init()
-        self.previewInfo.toFrame = convertImageFrameToPreviewFrame(previewInfo.selectedResource)
-        pushAnimator.previewInfo = self.previewInfo
+        presentAnimator.transitionData = self.transitionData
     }
     
-    private lazy var pushAnimator = PhotoBrowserPresentAnimator()
+    private let presentAnimator = PhotoBrowserPresentAnimator()
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        pushAnimator
+        presentAnimator
     }
 }

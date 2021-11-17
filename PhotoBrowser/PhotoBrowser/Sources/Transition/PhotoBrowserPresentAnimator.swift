@@ -9,7 +9,7 @@ import UIKit
 
 class PhotoBrowserPresentAnimator: NSObject , UIViewControllerAnimatedTransitioning {
     
-    var previewInfo: ResourcePreviewInfo! = nil
+    var transitionData: TransitionData!
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.2
@@ -23,7 +23,7 @@ class PhotoBrowserPresentAnimator: NSObject , UIViewControllerAnimatedTransition
         toView?.isHidden = true // 在动画完成前隐藏
         
         /// set a placeholder view before the animation start
-        let placeholderView = UIView(frame: previewInfo.fromFrame)
+        let placeholderView = UIView(frame: transitionData.fromFrame)
         placeholderView.backgroundColor = .systemGray
         containerView.addSubview(placeholderView)
         
@@ -34,8 +34,8 @@ class PhotoBrowserPresentAnimator: NSObject , UIViewControllerAnimatedTransition
         containerView.addSubview(dimmingView)
         
         /// add transition image view
-        let transitionImageView = UIImageView(frame: previewInfo.fromFrame)
-        transitionImageView.image = previewInfo.selectedResource
+        let transitionImageView = UIImageView(frame: transitionData.fromFrame)
+        transitionImageView.image = transitionData.resource
         transitionImageView.contentMode = .scaleAspectFill
         transitionImageView.layer.masksToBounds = true
         containerView.addSubview(transitionImageView)
@@ -44,7 +44,7 @@ class PhotoBrowserPresentAnimator: NSObject , UIViewControllerAnimatedTransition
         let duration = transitionDuration(using: transitionContext)
         UIView.animate(withDuration: duration, delay: 0, options: .curveEaseOut) {
             dimmingView.alpha = 1
-            transitionImageView.frame = self.previewInfo.toFrame
+            transitionImageView.frame = self.transitionData.toFrame
         } completion: { _ in
             toView?.isHidden = false
             placeholderView.removeFromSuperview()
