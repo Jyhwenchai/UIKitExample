@@ -25,10 +25,10 @@
             </objects>
             <point key="canvasLocation" x="-1367" y="108"/>
         </scene>
-        <!--Present URL Image View Controller-->
+        <!--Present View Controller-->
         <scene sceneID="hO0-6k-uYb">
             <objects>
-                <viewController id="qIl-RB-j0b" customClass="PresentURLImageViewController" customModule="PhotoBrowser" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="qIl-RB-j0b" customClass="PresentViewController" customModule="PhotoBrowser" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="wUI-Cw-nHv">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

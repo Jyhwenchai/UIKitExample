@@ -9,7 +9,7 @@ import UIKit
 
 class PhotoBrowserDismissAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
-    var transitionData: TransitionData!
+    var transitionData: TransitionDismissData!
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.2

@@ -9,7 +9,7 @@ import UIKit
 
 class PhotoBrowserDismissTransitioning: NSObject, UIViewControllerTransitioningDelegate {
 
-    var transitionData: TransitionData? {
+    var transitionData: TransitionDismissData? {
         get { nil }
         set {
             interactiveTransition.transitionData = newValue

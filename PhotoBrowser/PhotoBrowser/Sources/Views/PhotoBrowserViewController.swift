@@ -10,10 +10,10 @@ import UIKit
 class PhotoBrowserViewController: UIViewController {
 
     var isURLImage: Bool = false
+    var selectedIndex: Int = 0
     weak var delegate: PhotoBrowserDelegate?
     
     private var dismissTransitioning: PhotoBrowserDismissTransitioning = PhotoBrowserDismissTransitioning()
-    private var previewInfo: ResourcePreviewInfo
     private var followIndex: Bool = true
     
     
@@ -47,15 +47,6 @@ class PhotoBrowserViewController: UIViewController {
     }()
     
     
-    init(previewInfo: ResourcePreviewInfo) {
-        self.previewInfo = previewInfo
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -81,15 +72,15 @@ class PhotoBrowserViewController: UIViewController {
     }
     
     func initView() {
-        previewInfo.toFrame = previewInfo.fromFrame
-        previewInfo.fromFrame = convertImageFrameToPreviewFrame(previewInfo.selectedResource)
+//        previewInfo.toFrame = previewInfo.fromFrame
+//        previewInfo.fromFrame = convertImageFrameToPreviewFrame(previewInfo.selectedResource)
         dismissTransitioning.interactiveController = self
         
         view.backgroundColor = .black
         view.addSubview(collectionView)
         
         collectionView.reloadData()
-        collectionView.scrollToItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0), at: .centeredHorizontally, animated: false)
+        collectionView.scrollToItem(at: IndexPath(item: selectedIndex, section: 0), at: .centeredHorizontally, animated: false)
     }
     
     func initBind() {
@@ -183,8 +174,7 @@ extension PhotoBrowserViewController: UICollectionViewDataSource, UICollectionVi
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        let selectedIndex = targetContentOffset.pointee.x / scrollView.bounds.width
-        previewInfo.selectedIndex = Int(selectedIndex)
+        selectedIndex = Int(targetContentOffset.pointee.x / scrollView.bounds.width)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -208,18 +198,19 @@ extension PhotoBrowserViewController: UICollectionViewDataSource, UICollectionVi
     }
     
     
-    private func createTransitionData() -> TransitionData? {
-        guard let cell = collectionView.cellForItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0)) as? BrowserCell else {
+    private func createTransitionData() -> TransitionDismissData? {
+        guard let cell = collectionView.cellForItem(at: IndexPath(item: selectedIndex, section: 0)) as? BrowserCell else {
             return nil
         }
+        let resource = cell.resource.image
         let fromFrame = cell.resource.fromFrame
         let toFrame = cell.resource.toFrame
-        let transitionData = TransitionData(resource: previewInfo.selectedResource, fromFrame: fromFrame, toFrame: toFrame)
+        let transitionData = TransitionDismissData(resource: resource, fromFrame: fromFrame, toFrame: toFrame)
         return transitionData
     }
     
     private func unActiveInteractiveCell() {
-        guard let cell = collectionView.cellForItem(at: IndexPath(item: previewInfo.selectedIndex, section: 0)) as? BrowserCell else { return }
+        guard let cell = collectionView.cellForItem(at: IndexPath(item: selectedIndex, section: 0)) as? BrowserCell else { return }
         cell.endInteractive()
     }
 
@@ -312,13 +303,13 @@ extension PhotoBrowserViewController {
     }
     
     func startCurrentDownloadOperationProgressAnimation() {
-        let indexPath = IndexPath(item: previewInfo.selectedIndex, section: 0)
+        let indexPath = IndexPath(item: selectedIndex, section: 0)
         guard let cell = collectionView.cellForItem(at: indexPath) as? BrowserCell else { return }
         cell.loadingView.startAnimating()
     }
     
     func stopCurrentDownloadOperationProgressAnimation() {
-         let indexPath = IndexPath(item: previewInfo.selectedIndex, section: 0)
+         let indexPath = IndexPath(item:selectedIndex, section: 0)
         guard let cell = collectionView.cellForItem(at: indexPath) as? BrowserCell else { return }
         cell.loadingView.stopAnimating()
     }

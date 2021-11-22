@@ -7,26 +7,6 @@
 
 import UIKit
 
-//enum ImageResourceType {
-//    case raw(UIImage)
-//    case url(String)
-//}
-//
-//enum VideoResourceType {
-//   case url(String)
-//}
-
-//enum Resource {
-//    enum Image {
-//        case raw(UIImage)
-//        case url(URL)
-//    }
-//
-//    case image(Image)
-//    case vedio
-//}
-
-
 protocol Resource {
     var fromFrame: CGRect { get set }
     var toFrame: CGRect { get set }

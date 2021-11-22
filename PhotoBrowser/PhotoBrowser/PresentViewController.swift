@@ -10,7 +10,6 @@ import UIKit
 class PresentViewController: UIViewController {
     
     var dataSource: [UIImage] = []
-    private var selectedResourcesInfo: [ResourcePreviewInfo] = []
     
     //MARK: - Views
     lazy var collectionView: UICollectionView = {
@@ -87,18 +86,16 @@ extension PresentViewController: UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! ImageCell
         let fromFrame = cell.contentView.convert(cell.imageView.frame, to: view)
-        let previewInfo = ResourcePreviewInfo(resources: dataSource, selectedIndex: indexPath.item, fromFrame: fromFrame)
-        
-        let transitionData = TransitionData(resource: previewInfo.selectedResource, fromFrame: fromFrame, toFrame: .zero)
+        let image = dataSource[indexPath.item]
+        let transitionData = TransitionPresentData(resource: RawImage(image: image, fromFrame: fromFrame, toFrame: .zero))
         let navigationTransitioning = PhotoBrowserPresentTransitioning(transitionData: transitionData)
-        let controller = PhotoBrowserViewController(previewInfo: previewInfo)
+        
+        let controller = PhotoBrowserViewController()
+        controller.selectedIndex = indexPath.item
         controller.delegate = self
         controller.modalPresentationStyle = .fullScreen
         controller.transitioningDelegate = navigationTransitioning
         present(controller, animated: true, completion: nil)
-    }
-    
-    private func updateTransitioningConfigure(with cell: ImageCell, at indexPath: IndexPath) {
     }
     
 }

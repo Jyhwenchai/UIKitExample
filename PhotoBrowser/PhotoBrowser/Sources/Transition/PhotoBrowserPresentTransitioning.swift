@@ -9,11 +9,14 @@ import UIKit
 
 class PhotoBrowserPresentTransitioning: NSObject, UIViewControllerTransitioningDelegate {
     
-    private var transitionData: TransitionData
+    private var transitionData: TransitionPresentData
     
-    init(transitionData: TransitionData) {
+    init(transitionData: TransitionPresentData) {
         self.transitionData = transitionData
-        self.transitionData.toFrame = convertImageFrameToPreviewFrame(transitionData.resource)
+        if var resource = transitionData.resource as? RawImage {
+            resource.toFrame = convertImageFrameToPreviewFrame(resource.image)
+            self.transitionData.resource = resource
+        }
         super.init()
         presentAnimator.transitionData = self.transitionData
     }

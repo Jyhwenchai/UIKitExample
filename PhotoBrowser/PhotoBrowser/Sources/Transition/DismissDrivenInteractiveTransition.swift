@@ -14,7 +14,7 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
     private weak var panGesture: UIPanGestureRecognizer?
     private var transitionDeviationOffset: CGPoint = .zero
     
-    var transitionData: TransitionData!
+    var transitionData: TransitionDismissData!
     weak var interactiveController: UIViewController! 
     var interactiveEndClosure: ( ()->Void )?
     
