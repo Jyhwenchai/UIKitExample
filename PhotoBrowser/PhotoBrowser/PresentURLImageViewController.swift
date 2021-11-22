@@ -1,15 +1,16 @@
 //
-//  PresentViewController.swift
+//  PresentURLImageViewController.swift
 //  PhotoBrowser
 //
-//  Created by 蔡志文 on 2021/11/8.
+//  Created by 蔡志文 on 2021/11/22.
 //
 
 import UIKit
 
-class PresentViewController: UIViewController {
+class PresentURLImageViewController: UIViewController {
     
     var dataSource: [UIImage] = []
+    var urlImages: [URL] = []
     private var selectedResourcesInfo: [ResourcePreviewInfo] = []
     
     //MARK: - Views
@@ -39,7 +40,7 @@ class PresentViewController: UIViewController {
         initImageData()
     }
     
-
+    
     private func initView() {
         title = "Photo Browser"
         view.backgroundColor = UIColor.black
@@ -57,21 +58,20 @@ class PresentViewController: UIViewController {
     
     private func initImageData() {
         //构造图片数据
-        for index in 0...111 {
-            let at = index % 13 + 1
-            
-            let pathString = String(format: "Expression%.2d", at)
-            let path = Bundle.main.path(forResource: pathString, ofType: "jpeg")
-            
-            guard let imgPath = path else { return }
-            let img = UIImage(contentsOfFile: imgPath)!
-            dataSource.append(img)
+        for index in 0...1 {
+            let id = index * index + 1
+            let width: Int = index / 2 == 0 ? 400 : 500
+            let height: Int = index / 3 == 0 ? 400 : 500
+            let url = "https://picsum.photos/id/\(id)/\(width * 5)/\(height * 5)"
+            let image = UIImage(data: try! Data(contentsOf: URL(string: url)!))!
+            dataSource.append(image)
+            urlImages.append(URL(string: url)!)
         }
     }
     
 }
 
-extension PresentViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension PresentURLImageViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -92,6 +92,7 @@ extension PresentViewController: UICollectionViewDataSource, UICollectionViewDel
         let transitionData = TransitionData(resource: previewInfo.selectedResource, fromFrame: fromFrame, toFrame: .zero)
         let navigationTransitioning = PhotoBrowserPresentTransitioning(transitionData: transitionData)
         let controller = PhotoBrowserViewController(previewInfo: previewInfo)
+        controller.isURLImage = true
         controller.delegate = self
         controller.modalPresentationStyle = .fullScreen
         controller.transitioningDelegate = navigationTransitioning
@@ -104,18 +105,17 @@ extension PresentViewController: UICollectionViewDataSource, UICollectionViewDel
 }
 
 
-extension PresentViewController: PhotoBrowserDelegate {
+extension PresentURLImageViewController: PhotoBrowserDelegate {
     func numberOfItems(in controller: PhotoBrowserViewController) -> Int {
         dataSource.count
     }
     
     func photoBrowserViewController(_ controller: PhotoBrowserViewController, willShowItemAt index: Int) -> Resource {
-        let image = dataSource[index]
         var toFrame = CGRect.zero
         if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? ImageCell {
             toFrame = cell.contentView.convert(cell.imageView.frame, to: view)
         }
-        return RawImage(image: image, fromFrame: convertImageFrameToPreviewFrame(image), toFrame: toFrame)
+        return URLImage(url: urlImages[index], fromFrame: .zero, toFrame: toFrame)
     }
     
 }

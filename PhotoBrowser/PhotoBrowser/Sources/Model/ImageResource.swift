@@ -7,12 +7,27 @@
 
 import UIKit
 
-struct ImageResource {
-    var type: ImageResourceType = .url("")
-    var fromFrame: CGRect = .zero
-    var toFrame: CGRect = .zero
-}
-
-extension ImageResource {
-    static var empty: ImageResource { .init() }
-}
+//enum ImageDownloadState {
+//    case ready, downloaded, failed
+//}
+//
+//struct ImageResource {
+//    var image: UIImage = UIImage()
+//    var fromFrame: CGRect = .zero
+//    var toFrame: CGRect = .zero
+//}
+//
+//extension ImageResource {
+//    static var empty: ImageResource { .init() }
+//}
+//
+//class Image {
+//    var resource: ImageResource = .empty
+//    var state: ImageDownloadState = .ready
+//    
+//    init(resource: ImageResource = .empty,
+//         state: ImageDownloadState = .ready) {
+//        self.resource = resource
+//        self.state = state
+//    }
+//}

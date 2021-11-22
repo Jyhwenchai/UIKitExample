@@ -9,7 +9,14 @@ import UIKit
 
 class BrowserCell: UICollectionViewCell {
     
-    var resource: ImageResource {
+    let loadingView: LoadingView = {
+        let loadingView = LoadingView()
+        loadingView.lineWidth = 2
+        loadingView.font = UIFont.systemFont(ofSize: 7)
+        return loadingView
+    }()
+    
+    var resource: RawImage {
         get { scrollView.resource }
         set { scrollView.resource = newValue }
     }
@@ -38,10 +45,7 @@ class BrowserCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(scrollView)
-        scrollView.startInteractingClosure = { [weak self] in
-            guard let self = self else { return }
-            self.startInteractingClosure?()
-        }
+        contentView.addSubview(loadingView)
     }
     
     required init?(coder: NSCoder) {
@@ -51,6 +55,8 @@ class BrowserCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         scrollView.frame = bounds
+        loadingView.frame = CGRect(origin: .zero, size: CGSize(width: 30, height: 30))
+        loadingView.center = contentView.center
     }
     
     func endInteractive() {

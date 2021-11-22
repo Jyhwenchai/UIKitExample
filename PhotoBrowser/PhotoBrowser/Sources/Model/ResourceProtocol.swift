@@ -7,11 +7,61 @@
 
 import UIKit
 
-enum ImageResourceType {
-    case raw(UIImage)
-    case url(String)
+//enum ImageResourceType {
+//    case raw(UIImage)
+//    case url(String)
+//}
+//
+//enum VideoResourceType {
+//   case url(String)
+//}
+
+//enum Resource {
+//    enum Image {
+//        case raw(UIImage)
+//        case url(URL)
+//    }
+//
+//    case image(Image)
+//    case vedio
+//}
+
+
+protocol Resource {
+    var fromFrame: CGRect { get set }
+    var toFrame: CGRect { get set }
 }
 
-enum VideoResourceType {
-   case url(String)
+struct RawImage: Resource {
+    var image: UIImage
+    var fromFrame: CGRect
+    var toFrame: CGRect
+}
+
+extension RawImage {
+    static var empty: RawImage { .init(image: UIImage(), fromFrame: .zero, toFrame: .zero) }
+}
+
+struct URLImage: Resource {
+    var url: URL
+    var fromFrame: CGRect
+    var toFrame: CGRect
+    var rawImage: RawImage = .empty 
+}
+
+enum ResourceType {
+    case rawImage, urlImage
+}
+
+enum ResourceDataState {
+    case possible, downloaded, failed
+}
+
+class ResourceData {
+    var resource: Resource
+    var state: ResourceDataState = .possible
+    
+    init(resource: Resource) {
+        self.resource = resource
+    }
 }

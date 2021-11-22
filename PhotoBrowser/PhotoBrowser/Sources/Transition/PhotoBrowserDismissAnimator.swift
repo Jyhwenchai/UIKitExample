@@ -24,7 +24,9 @@ class PhotoBrowserDismissAnimator: NSObject, UIViewControllerAnimatedTransitioni
         /// set a placeholder view before the animation start
         let placeholderView = UIView(frame: transitionData.toFrame)
         placeholderView.backgroundColor = .systemGray
-        containerView.addSubview(placeholderView)
+        if transitionData.fromFrame != .zero {
+            containerView.addSubview(placeholderView)
+        }
        
         /// add dimming view
         let dimmingView = UIView(frame: containerView.bounds)
@@ -32,6 +34,10 @@ class PhotoBrowserDismissAnimator: NSObject, UIViewControllerAnimatedTransitioni
         dimmingView.alpha = 1
         containerView.addSubview(dimmingView)
         
+        if transitionData.fromFrame.size == .zero {
+            transitionData.resource = UIColor.black.withAlphaComponent(0).image(CGSize(width: dimmingView.bounds.width, height: dimmingView.bounds.height))
+            transitionData.fromFrame = CGRect(origin: .zero, size: transitionData.resource.size)
+        }
         let animateView = UIImageView(image: transitionData.resource)
         animateView.frame = transitionData.fromFrame
         containerView.addSubview(animateView)

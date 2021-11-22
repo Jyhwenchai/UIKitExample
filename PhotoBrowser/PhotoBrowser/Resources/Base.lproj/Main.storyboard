@@ -18,28 +18,71 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="jse-pQ-D2o"/>
+                        <segue destination="qIl-RB-j0b" kind="relationship" relationship="rootViewController" id="tsh-ge-PpL"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lA3-4p-7ve" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-714" y="111"/>
+            <point key="canvasLocation" x="-1367" y="108"/>
         </scene>
-        <!--Present View Controller-->
+        <!--Present URL Image View Controller-->
+        <scene sceneID="hO0-6k-uYb">
+            <objects>
+                <viewController id="qIl-RB-j0b" customClass="PresentURLImageViewController" customModule="PhotoBrowser" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wUI-Cw-nHv">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="noR-w3-4qo"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="ZgF-ZH-ixA"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eGr-M2-2T3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-523" y="98"/>
+        </scene>
+        <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="PresentViewController" customModule="PhotoBrowser" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PhotoBrowser" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7Ub-qU-zqB">
+                                <rect key="frame" x="0.0" y="246" width="414" height="414"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="7Ub-qU-zqB" secondAttribute="height" multiplier="1:1" id="NA6-3f-vHi"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gsv-G5-cky">
+                                <rect key="frame" x="20" y="165" width="374" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Start download"/>
+                                <connections>
+                                    <action selector="downLoadAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8YO-s1-866"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="7Ub-qU-zqB" firstAttribute="top" secondItem="Gsv-G5-cky" secondAttribute="bottom" constant="50" id="1JT-Yh-52c"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="7Ub-qU-zqB" secondAttribute="trailing" id="ZBD-74-OPK"/>
+                            <constraint firstItem="7Ub-qU-zqB" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="bs8-td-fKn"/>
+                            <constraint firstItem="7Ub-qU-zqB" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="o9d-4E-7f4"/>
+                            <constraint firstItem="Gsv-G5-cky" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="qXx-Q5-FM5"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Gsv-G5-cky" secondAttribute="trailing" constant="20" id="z4Z-1z-4aw"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="alt-2W-uHn"/>
+                    <connections>
+                        <outlet property="imageView" destination="7Ub-qU-zqB" id="M2s-Ax-FEb"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="94" y="110"/>
+            <point key="canvasLocation" x="323" y="98"/>
         </scene>
     </scenes>
     <resources>

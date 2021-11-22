@@ -18,3 +18,19 @@ func convertImageFrameToPreviewFrame(_ image: UIImage) -> CGRect {
     
     return CGRect(origin: CGPoint(x: 0, y: toY), size: CGSize(width: toWidth, height: toHeight))
 }
+
+
+
+public extension UIColor {
+    func image(_ size: CGSize = CGSize(width: 1, height: 1), cornerRadius: CGFloat = 0) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { rendererContext in
+            self.setFill()
+            if cornerRadius > 0 {
+                let path = UIBezierPath(roundedRect: CGRect(origin: .zero, size: size), cornerRadius: cornerRadius)
+                path.addClip()
+            }
+            rendererContext.fill(CGRect(origin: .zero, size: size))
+        }
+    }
+}
+

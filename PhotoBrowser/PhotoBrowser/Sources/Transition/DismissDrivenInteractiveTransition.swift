@@ -99,11 +99,13 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
         containerView.addSubview(toView)
         
         // placeholder imageView
-        let placeholderView = UIView()
-        placeholderView.backgroundColor = .gray
-        placeholderView.frame = transitionData.toFrame
-        containerView.addSubview(placeholderView)
-        self.placeholderView = placeholderView
+        if transitionData.fromFrame.size != .zero {
+            let placeholderView = UIView()
+            placeholderView.backgroundColor = .gray
+            placeholderView.frame = transitionData.toFrame
+            containerView.addSubview(placeholderView)
+            self.placeholderView = placeholderView
+        }
         
         // dimming View
         let dimmingView = UIView(frame: containerView.bounds)
@@ -111,7 +113,11 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
         containerView.addSubview(dimmingView)
         self.dimmingView = dimmingView
         
-        // placeholder imageView
+        // animate imageView
+        if transitionData.fromFrame.size == .zero {
+            transitionData.resource = UIColor.black.withAlphaComponent(0).image(CGSize(width: dimmingView.bounds.width, height: dimmingView.bounds.height))
+            transitionData.fromFrame = CGRect(origin: .zero, size: transitionData.resource.size)
+        }
         let animateView = UIImageView(image: transitionData.resource)
         animateView.alpha = 1
         animateView.frame = transitionData.fromFrame
@@ -147,10 +153,6 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
         guard let dimmingView = dimmingView else {
             return
         }
-
-        guard let placeholderView = placeholderView else {
-            return
-        }
         
         guard let animateView = animateView else {
             return
@@ -164,7 +166,7 @@ class DismissDrivenInteractiveTransition: UIPercentDrivenInteractiveTransition {
             self.finish()
             animateView.removeFromSuperview()
             dimmingView.removeFromSuperview()
-            placeholderView.removeFromSuperview()
+            self.placeholderView?.removeFromSuperview()
             let cancel = self.transitionContext!.transitionWasCancelled
             self.transitionContext?.completeTransition(!cancel)
             self.unregisterPanGesture()

@@ -12,18 +12,16 @@ class PreviewImageView: UIScrollView {
     var startInteractingClosure: ( () -> Void )?
     var dismissClosure: ( () -> Void)?
     
-    private var __resource: ImageResource = .empty {
+    private var __resource: RawImage = .empty {
         didSet {
-            if case let .raw(image) = __resource.type {
-                imageView.image = image
-            }
+            imageView.image = __resource.image
             imageView.transform = .identity
             imageView.frame = __resource.fromFrame
             contentSize = __resource.fromFrame.size
         }
     }
     
-    var resource: ImageResource {
+    var resource: RawImage {
         get {
             var resource = __resource
             var fromFrame = imageView.frame
@@ -249,5 +247,5 @@ extension PreviewImageView: UIScrollViewDelegate {
         }
         imageView.frame.origin = origin
     }
-    
+
 }
