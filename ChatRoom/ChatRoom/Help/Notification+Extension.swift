@@ -7,7 +7,7 @@
 
 import UIKit
 
-public extension Notification {
+extension Notification {
     var keyboardFrame: CGRect {
         let frameKey = UIViewController.keyboardFrameEndUserInfoKey
         let frame = userInfo?.first(where: { (key, value) -> Bool in

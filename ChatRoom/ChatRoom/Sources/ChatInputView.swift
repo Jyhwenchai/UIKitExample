@@ -32,7 +32,7 @@ class ChatInputView: UIView {
         return button
     }()
     
-    let emojiButton: UIButton = {
+    lazy var emojiButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "icon_expression"), for: .normal)
         button.addTarget(self, action: #selector(emojiButtonAction), for: .touchUpInside)
@@ -40,7 +40,7 @@ class ChatInputView: UIView {
     }()
     
     
-    let addButton: UIButton = {
+    lazy var addButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "icon_more2"), for: .normal)
         button.addTarget(self, action: #selector(moreButtonAction), for: .touchUpInside)
