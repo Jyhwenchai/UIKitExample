@@ -11,41 +11,31 @@ private let maxInputHeight: CGFloat = 100.0
 private let minInputHeight: CGFloat = 36.0
 private let inputMarginSpacing: CGFloat = 16
 
-class ChatInputView: UIView {
+protocol InputViewDelegate: NSObjectProtocol {
+    func inputView(_ inputView: ChatInputView, show newAccessoryView: ChatInputView.SelectAccessoryView, dismiss oldAccessoryView: ChatInputView.SelectAccessoryView?)
+}
 
-    enum SelectComponentType {
-        case none
-        case voice
+public class ChatInputView: UIView {
+    
+    enum SelectAccessoryView: Equatable {
         case input
-        case emoji
-        case more
+        case selected(InputAccessoryView, AccessoryDirection)
     }
+    
+    enum AccessoryDirection: Equatable {
+        case left
+        case right
+    }
+    
+    /// 可能所有的组件视图都没有被选中，包括 TextField
+    var selectAccessoryView: SelectAccessoryView? = nil
+    var leftAccessoryViewGroup: InputAccessoryViewGroup?
+    var rightAccessoryViewGroup: InputAccessoryViewGroup?
+    
+    weak var delegate: InputViewDelegate?
     
     var confirmInputClosure: ((String) -> Void)?
     var updateFrameClosure: ((CGFloat) -> Void)?
-    var selectComponentClosure: ((SelectComponentType) -> Void)?
-    
-    
-    let voiceButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "icon_voice"), for: .normal)
-        return button
-    }()
-    
-    lazy var emojiButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "icon_expression"), for: .normal)
-        button.addTarget(self, action: #selector(emojiButtonAction), for: .touchUpInside)
-        return button
-    }()
-    
-    
-    lazy var addButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "icon_more2"), for: .normal)
-        button.addTarget(self, action: #selector(moreButtonAction), for: .touchUpInside)
-        return button
-    }()
     
     let textField: UITextView = {
         let textField = UITextView()
@@ -58,6 +48,7 @@ class ChatInputView: UIView {
         textField.enablesReturnKeyAutomatically = true
         return textField
     }()
+    
     let lineView = UIView()
     let contentView = UIView()
     
@@ -66,10 +57,7 @@ class ChatInputView: UIView {
         backgroundColor = UIColor(hex: "f1f1f1")
         textField.delegate = self
         addSubview(contentView)
-        contentView.addSubview(voiceButton)
         contentView.addSubview(textField)
-        contentView.addSubview(emojiButton)
-        contentView.addSubview(addButton)
         contentView.addSubview(lineView)
         lineView.backgroundColor = UIColor(hex: "e1e1e1")
     }
@@ -78,37 +66,96 @@ class ChatInputView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
-        let minViewHeight = minInputHeight + inputMarginSpacing
-        let componentY = height - minViewHeight
+        
         contentView.frame = CGRect(x: 0, y: 0, width: width, height: height)
-        voiceButton.frame = CGRect(x: 0, y: componentY, width: 54, height: minViewHeight)
-        textField.frame = CGRect(x: 54, y: 8, width: width - 54 - 93, height: height - inputMarginSpacing)
-        addButton.sizeToFit()
-        addButton.frame = CGRect(x: width - addButton.width - 15, y: componentY, width: addButton.width, height: minViewHeight)
-        emojiButton.sizeToFit()
-        emojiButton.frame = CGRect(x: addButton.minX - addButton.width - 15, y: componentY, width: emojiButton.width, height: minViewHeight)
         lineView.frame = CGRect(x: 0, y: 0, width: contentView.width, height: 1)
+        
+        var reduceWidth: CGFloat = 0
+        var groupViewMaxX: CGFloat = 0
+        if let leftAccessoryViewGroup = leftAccessoryViewGroup {
+            let groupView = leftAccessoryViewGroup.titleGroupView()
+            var frame = groupView.frame
+            frame.size.height = bounds.height
+            groupView.frame = frame
+            reduceWidth += frame.width
+            groupViewMaxX = frame.width
+        }
+        
+        if let rightAccessoryViewGroup = rightAccessoryViewGroup {
+            let groupView = rightAccessoryViewGroup.titleGroupView()
+            var frame = groupView.frame
+            frame.origin.x = bounds.width - frame.width
+            frame.size.height = bounds.height
+            groupView.frame = frame
+            reduceWidth += frame.width
+        }
+        
+        let remainWidth = bounds.width - reduceWidth
+        textField.frame = CGRect(x: groupViewMaxX, y: inputMarginSpacing / 2, width: remainWidth, height: height - inputMarginSpacing)
     }
     
-    @objc func emojiButtonAction() {
-        selectComponentClosure?(.emoji)
+    
+    public func addLeftAccessoryViews(@InputAccessoryBuilder _ viewBuilder: () -> InputAccessoryViewGroup) {
+        leftAccessoryViewGroup = viewBuilder()
+        addSubview(leftAccessoryViewGroup!.titleGroupView())
+        leftAccessoryViewGroup?.selectedClosure = { [weak self] view in
+            guard let self = self else { return }
+            self.updateSelectedAccessoryView(view, direction: .left)
+        }
     }
     
-    @objc func moreButtonAction() {
-        selectComponentClosure?(.more)
+    public func addRightAccessoryViews(@InputAccessoryBuilder _ viewBuilder: () -> InputAccessoryViewGroup) {
+        rightAccessoryViewGroup = viewBuilder()
+        addSubview(rightAccessoryViewGroup!.titleGroupView())
+        rightAccessoryViewGroup?.selectedClosure = { [weak self] view in
+            guard let self = self else { return }
+            self.updateSelectedAccessoryView(view, direction: .right)
+        }
     }
+    
+    func updateSelectedAccessoryView(_ accessoryView: InputAccessoryView, direction: AccessoryDirection) {
+        if selectAccessoryView == nil {
+            selectAccessoryView = .selected(accessoryView, direction)
+            accessoryView.titleView.isSelected = true
+            delegate?.inputView(self, show: selectAccessoryView!, dismiss: nil)
+            return
+        }
+        
+        let oldSelectAccessoryView = selectAccessoryView!
+        switch oldSelectAccessoryView {
+        case .input:
+            selectAccessoryView = .selected(accessoryView, direction)
+            accessoryView.titleView.isSelected = true
+        case .selected(let currentAccessoryView, let currentDirection):
+            if direction == currentDirection, accessoryView.index == currentAccessoryView.index {
+                selectAccessoryView = .input
+            } else {
+                selectAccessoryView = .selected(accessoryView, direction)
+                accessoryView.titleView.isSelected = true
+            }
+            currentAccessoryView.titleView.isSelected = false
+        }
+        delegate?.inputView(self, show: selectAccessoryView!, dismiss: oldSelectAccessoryView)
+    }
+    
+    
 }
 
 extension ChatInputView: UITextViewDelegate {
     
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        selectComponentClosure?(.input)
+    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if case let .selected(view, _) = selectAccessoryView {
+            view.titleView.isSelected = false
+        }
+        let oldSelectAccessoryView = selectAccessoryView
+        selectAccessoryView = .input
+        delegate?.inputView(self, show: selectAccessoryView!, dismiss: oldSelectAccessoryView)
         return true
     }
     
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             if let text = textView.text {
                 textView.text = nil
@@ -119,7 +166,7 @@ extension ChatInputView: UITextViewDelegate {
         return true
     }
     
-    func textViewDidChange(_ textView: UITextView) {
+    public func textViewDidChange(_ textView: UITextView) {
         if let _ = textView.text {
             let size = textView.sizeThatFits(CGSize(width: textView.width, height: 0))
             let viewHeight: CGFloat = min(max(ceil(size.height), minInputHeight), maxInputHeight) + inputMarginSpacing

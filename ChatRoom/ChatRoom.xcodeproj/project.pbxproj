@@ -23,6 +23,8 @@
 		660EC1C4271EA46A00CB0E42 /* ScreenAppearence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1C3271EA46A00CB0E42 /* ScreenAppearence.swift */; };
 		660EC1C6271EB9CC00CB0E42 /* TextModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1C5271EB9CC00CB0E42 /* TextModel.swift */; };
 		660EC1C8271FAB1F00CB0E42 /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */; };
+		663CB9E128474E1E00DAF517 /* ChatInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663CB9E028474E1E00DAF517 /* ChatInputAccessoryView.swift */; };
+		663CB9E328485D4D00DAF517 /* AccessoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663CB9E228485D4D00DAF517 /* AccessoryViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,7 +46,8 @@
 		660EC1C3271EA46A00CB0E42 /* ScreenAppearence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAppearence.swift; sourceTree = "<group>"; };
 		660EC1C5271EB9CC00CB0E42 /* TextModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextModel.swift; sourceTree = "<group>"; };
 		660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomViewController.swift; sourceTree = "<group>"; };
-		6643DBBC2722AAFA00B7D7C9 /* TestCase.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TestCase.md; sourceTree = "<group>"; };
+		663CB9E028474E1E00DAF517 /* ChatInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputAccessoryView.swift; sourceTree = "<group>"; };
+		663CB9E228485D4D00DAF517 /* AccessoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,7 @@
 				660EC1BD271E593400CB0E42 /* TextMessageContentView.swift */,
 				660EC1BF271E5DE800CB0E42 /* ChatViewModel.swift */,
 				660EC1C5271EB9CC00CB0E42 /* TextModel.swift */,
+				663CB9E228485D4D00DAF517 /* AccessoryViews.swift */,
 				660EC1A4271D6A8900CB0E42 /* Main.storyboard */,
 				660EC1A7271D6A8B00CB0E42 /* Assets.xcassets */,
 				660EC1A9271D6A8B00CB0E42 /* LaunchScreen.storyboard */,
@@ -110,7 +114,7 @@
 			children = (
 				660EC1C7271FAB1F00CB0E42 /* ChatRoomViewController.swift */,
 				660EC1B6271E4F2F00CB0E42 /* ChatInputView.swift */,
-				6643DBBC2722AAFA00B7D7C9 /* TestCase.md */,
+				663CB9E028474E1E00DAF517 /* ChatInputAccessoryView.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -193,7 +197,9 @@
 				660EC19F271D6A8900CB0E42 /* AppDelegate.swift in Sources */,
 				660EC1C8271FAB1F00CB0E42 /* ChatRoomViewController.swift in Sources */,
 				660EC1B4271D6AE100CB0E42 /* TextMessageCell.swift in Sources */,
+				663CB9E328485D4D00DAF517 /* AccessoryViews.swift in Sources */,
 				660EC1A1271D6A8900CB0E42 /* SceneDelegate.swift in Sources */,
+				663CB9E128474E1E00DAF517 /* ChatInputAccessoryView.swift in Sources */,
 				660EC1C6271EB9CC00CB0E42 /* TextModel.swift in Sources */,
 				660EC1C0271E5DE800CB0E42 /* ChatViewModel.swift in Sources */,
 				660EC1C4271EA46A00CB0E42 /* ScreenAppearence.swift in Sources */,
@@ -362,7 +368,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ilosic.ChatRoom;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilosic.ChatRoom2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -393,7 +399,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ilosic.ChatRoom;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilosic.ChatRoom2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

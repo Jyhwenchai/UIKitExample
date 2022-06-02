@@ -18,6 +18,8 @@ class ViewController: ChatRoomViewController {
         // test item
         let barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(testAction))
         navigationItem.rightBarButtonItems = [barItem]
+        initView()
+        initBind()
     }
     
     override func viewDidLayoutSubviews() {
@@ -32,13 +34,45 @@ class ViewController: ChatRoomViewController {
         tableView.reloadData()
     }
     
-    override func initView() {
-        super.initView()
+    func initView() {
         tableView.register(TextMessageCell.self, forCellReuseIdentifier: "TextMessageCell")
+        
+        let button1: VoiceButton = {
+            let button = VoiceButton()
+            button.button.setImage(UIImage(named: "icon_voice"), for: .normal)
+            return button
+        }()
+        
+        let button2: VoiceButton = {
+            let button = VoiceButton()
+            button.button.setImage(UIImage(named: "icon_expression"), for: .normal)
+            return button
+        }()
+        
+        let button3: VoiceButton = {
+            let button = VoiceButton()
+            button.button.setImage(UIImage(named: "icon_more2"), for: .normal)
+            return button
+        }()
+        
+        let contentView1 = VoiceAssessoryContentView(frame: CGRect(x: 0, y: 0, width: 0, height: 200))
+        contentView1.backgroundColor = .blue
+        let contentView2 = VoiceAssessoryContentView(frame: CGRect(x: 0, y: 0, width: 0, height: 220))
+        contentView2.backgroundColor = .purple
+        let contentView3 = VoiceAssessoryContentView(frame: CGRect(x: 0, y: 0, width: 0, height: 240))
+        contentView3.backgroundColor = .green
+        contentView3.position = .coverInput
+
+        chatInputView.addLeftAccessoryViews {
+            InputAccessoryView(titleView: button1, contentView: contentView1)
+        }
+        chatInputView.addRightAccessoryViews {
+            InputAccessoryView(titleView: button2, contentView: contentView2)
+            InputAccessoryView(titleView: button3, contentView: contentView3)
+        }
     }
     
-    override func initBind() {
-        super.initBind()
+    func initBind() {
         viewModel.addNewMessageCompleteHandler = { [weak self] in
             guard let self = self else { return }
             self.layoutUIWhenReceiveMessage()
